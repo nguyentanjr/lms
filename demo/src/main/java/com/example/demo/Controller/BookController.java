@@ -5,46 +5,53 @@ import com.example.demo.Model.Book;
 import com.example.demo.Model.Genre;
 import com.example.demo.Service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 public class BookController {
     @Autowired
     private BookService bookService;
 
     @PostMapping("/createBook")
-    public Book createBook(@RequestBody Book book) {
-        return bookService.saveBook(book);
+    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+        Book bookCreated = bookService.saveBook(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(book);
     }
 
     @PostMapping("/createBooks")
-    public List<Book> createBooks(@RequestBody List<Book> books) {
-        return bookService.saveALlBooks(books);
+    public ResponseEntity<List<Book>> createBooks(@RequestBody List<Book> books) {
+        List<Book> bookList = bookService.saveALlBooks(books);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookList);
     }
 
     @GetMapping("/retrieveAllBooks")
-    public List<Book> retrieveAllBooks() {
-        return bookService.getAllBooks();
+    public ResponseEntity<List<Book>> retrieveAllBooks(@RequestBody List<Book> books) {
+        List<Book> bookList = bookService.getAllBooks();
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookList);
     }
 
     @GetMapping("/retrieveBooksByName")
-    public List<Book> retrieveBooksByName(@RequestParam String name) {
-        return bookService.findBooksByName(name);
+    public ResponseEntity<List<Book>> retrieveBooksByName(@RequestParam String bookName) {
+        List<Book> bookList = bookService.findBooksByName(bookName);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookList);
     }
 
-    @GetMapping("/retrieveBookById/{id}")
-    public Book retrieveBookById(@PathVariable long id) {
-        return bookService.findBookById(id);
+    @GetMapping("/retrieveBookById")
+    public ResponseEntity<Book> retrieveBookById(@RequestParam long bookId) {
+        Book book = bookService.findBookById(bookId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(book);
     }
 
-    @GetMapping("/retrieveBooksByGenre/{genre}")
-    public List<Book> retrieveBookByGenre(@PathVariable Genre genre) {
-        return bookService.findBooksByGenre(genre);
+    @GetMapping("/retrieveBooksByGenre")
+    public ResponseEntity<List<Book>> retrieveBooksByGenre(@RequestParam Genre genre) {
+        List<Book> bookList = bookService.findBooksByGenre(genre);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookList);
     }
-
     @GetMapping("/retrieveBooksByAuthorName")
     public List<Book> retrieveBooksByAuthorName(@RequestParam String author_name) {
         return bookService.findBooksByAuthorName(author_name);

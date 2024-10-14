@@ -23,4 +23,15 @@ public class Student {
     @JsonIgnore
     private Card card;
 
+    @Override
+    public String toString() {
+        return "Student{" +
+                "studentid=" + studentid +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", card=" + card +
+                '}';
+    }
 }

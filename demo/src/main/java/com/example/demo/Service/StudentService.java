@@ -8,6 +8,8 @@ import com.example.demo.Respository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StudentService {
     @Autowired
@@ -23,5 +25,18 @@ public class StudentService {
         student.setCard(card);
         cardRepository.save(card);
         return studentRepository.save(student);
+    }
+    public Student deleteStudentById(long studentid) {
+        return studentRepository.deleteById(studentid);
+    }
+    public List<Student> listAllStudents() {
+        return studentRepository.findAll();
+    }
+
+    public void save(Student student) {
+        studentRepository.save(student);
+    }
+    public Student findStudentByStudentId(long studentid) {
+        return studentRepository.findByStudentId(studentid);
     }
 }
