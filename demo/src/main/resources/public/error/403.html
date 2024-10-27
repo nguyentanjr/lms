@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Page Not Found</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Set font and basic styling for body */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Centered container for the error box */
+        .container {
+            text-align: center;
+        }
+
+        /* Styling for the error box */
+        .error-box {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 20px;
+        }
+
+        /* Big error code */
+        .error-code {
+            font-size: 100px;
+            font-weight: bold;
+            color: #FF6347;
+            margin-bottom: 20px;
+        }
+
+        /* Error message */
+        .error-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* Back to home link */
+        .back-home {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #FF6347;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .back-home:hover {
+            background-color: #FF4500;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="error-box">
+        <h1 class="error-code">403</h1>
+        <p class="error-message">Oops! The page you are looking for does not exist.</p>
+        <a href="/static" class="back-home">Go Back to Home</a>
+    </div>
+</div>
+</body>
+</html>

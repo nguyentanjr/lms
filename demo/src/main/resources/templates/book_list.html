@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Book List</title>
+    <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container text-center">
+    <h2 class="text-center mb-4">Library Book List</h2>
+
+    <!-- Thông báo thành công -->
+    <div th:if="${message}" class="alert alert-success" role="alert">
+        <p th:text="${message}"></p>
+    </div>
+
+    <!-- Thông báo lỗi -->
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <p th:text="${error}"></p>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Status</th>
+            <th>Genre</th>
+            <th>Published Year</th>
+            <th>Copies Available</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="bookListTable">
+        <tr th:each="book : ${books}">
+            <td th:text="${book.id}"></td>
+            <td th:text="${book.name}"></td>
+            <td th:text="${book.getAuthor()}"></td>
+            <td>
+                    <span class="status-badge" th:class="${book.isAvailable() ? 'available' : 'borrowed'}"
+                          th:text="${book.isAvailable() ? 'Available' : 'Borrowed'}"></span>
+            </td>
+            <td th:text="${book.genre}"></td>
+            <td th:text="${book.publishedYear}"></td>
+            <td th:text="${book.copiesAvailable}"></td>
+            <td>
+                <form th:action="@{/book_list/{userId}(userId=${book.id})}" method="get" style="display:inline;">
+                    <input type="hidden" th:name="bookId" th:value="${book.id}"/>
+                    <button class="btn btn-primary" th:if="${book.isAvailable()}" type="submit">Borrow</button>
+                </form>
+                <a class="btn btn-info">See</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>

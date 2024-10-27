@@ -1,10 +1,13 @@
 package com.example.demo.Model;
+import com.example.demo.Model.Enum.Genre;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.*;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -12,10 +15,13 @@ import java.util.List;
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long bookId;
+
+    @Column(name="book_id")
+    private long id;
 
     private String name;
 
+    @Column(name="status")
     private boolean isAvailable;
 
     @Enumerated(EnumType.STRING)
@@ -25,10 +31,11 @@ public class Book {
 
     private int copiesAvailable;
 
-
+    @ManyToMany(mappedBy = "books")
+    private Set<User> users = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "author_name")
+    @JoinColumn(name = "author_id")
     @JsonIgnore
     Author author;
 

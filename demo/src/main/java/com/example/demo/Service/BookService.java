@@ -1,16 +1,10 @@
 package com.example.demo.Service;
 
 import com.example.demo.Model.Book;
-import com.example.demo.Model.Genre;
-import com.example.demo.Model.Student;
+import com.example.demo.Model.Enum.Genre;
 import com.example.demo.Respository.BookRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

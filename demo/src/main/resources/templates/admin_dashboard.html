@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: #f4f7f6;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #34495e;
+            height: auto;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .sidebar ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            background-color: #ffffff;
+            padding: 15px 30px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        nav a:hover {
+            color: #3498db;
+        }
+
+        .logout {
+            color: #e74c3c;
+        }
+
+        .dashboard {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+
+        .dashboard div {
+            background-color: #ffffff;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .dashboard h2 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #34495e;
+        }
+
+        .dashboard div span {
+            font-size: 24px;
+            color: #2ecc71;
+        }
+
+        .search-section {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .search-student, .search-teacher {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 25px;
+            width: 45%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-student h3, .search-teacher h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        form input, form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        form button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h3>Dashboard Menu</h3>
+    <ul>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Users</a></li>
+        <li><a href="#">Books</a></li>
+        <li><a href="#">Issue/Return</a></li>
+        <li><a href="#">Notifications</a></li>
+    </ul>
+</div>
+
+<div class="content">
+
+        <nav>
+            <div>
+                <a href="#">Users Dashboard</a>
+                <a href="#">Add Student</a>
+                <a href="#">Add Teacher</a>
+                <a href="#">View Students</a>
+                <a href="#">View Teachers</a>
+            </div>
+            <a th:href="@{/logout}" class="logout">Logout</a>
+        </nav>
+
+
+    <div class="dashboard">
+        <div class="total-users">
+            <h2>
+                <a th:href="@{/admin/user_list}"> Total Users </a>
+            </h2>
+            <span th:text="${totalUsers}">sda</span>
+        </div>
+        <div class="students">
+            <h2>User</h2>
+            <span th:text="${normalUsers}">sda</span>
+        </div>
+        <div class="staff">
+            <h2>Admin</h2>
+            <span th:text="${adminUsers}">sda</span>
+        </div>
+    </div>
+
+    <div class="search-section">
+        <div class="search-student">
+            <h3>Search Student</h3>
+            <form>
+                <label for="studentName">Student Name</label>
+                <input type="text" id="studentName" name="studentName">
+
+                <label for="registrationNumber">Registration Number</label>
+                <input type="text" id="registrationNumber" name="registrationNumber">
+
+                <label for="class">Select Class</label>
+                <select id="class" name="class">
+                    <option value="Year 1">Year 1</option>
+                    <option value="Year 2">Year 2</option>
+                </select>
+
+                <label for="rollNumber">Roll Number</label>
+                <input type="text" id="rollNumber" name="rollNumber">
+
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <div class="search-teacher">
+            <h3>Search Teacher</h3>
+            <form>
+                <label for="teacherName">Teacher Name</label>
+                <input type="text" id="teacherName" name="teacherName">
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email">
+
+                <label for="memberId">Member ID</label>
+                <input type="text" id="memberId" name="memberId">
+
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

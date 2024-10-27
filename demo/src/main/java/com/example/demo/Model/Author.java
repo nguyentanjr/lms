@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 public class Author {
     @Id
+    private Long id;
     private String name;
     private int yearOfPublication;
 

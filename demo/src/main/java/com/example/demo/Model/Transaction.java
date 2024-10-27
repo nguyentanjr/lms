@@ -1,5 +1,6 @@
 package com.example.demo.Model;
 
+import com.example.demo.Model.Enum.TransactionStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;

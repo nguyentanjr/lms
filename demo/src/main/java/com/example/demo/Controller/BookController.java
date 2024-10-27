@@ -2,7 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.BorrowRequest;
 import com.example.demo.Model.Book;
-import com.example.demo.Model.Genre;
+import com.example.demo.Model.Enum.Genre;
 import com.example.demo.Service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,8 +55,7 @@ public class BookController {
     @GetMapping("/retrieveBooksByAuthorName")
     public List<Book> retrieveBooksByAuthorName(@RequestParam String author_name) {
         return bookService.findBooksByAuthorName(author_name);
-    }
-    @GetMapping("/retrieveBooksByPublishedYear")
+    }    @GetMapping("/retrieveBooksByPublishedYear")
     public List<Book> retrieveBooksByPublishedYear(@RequestParam int publishedYear) {
         return bookService.findBooksByPublishedYear(publishedYear);
     }
