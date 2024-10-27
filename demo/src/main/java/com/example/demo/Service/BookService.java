@@ -6,6 +6,7 @@ import com.example.demo.Respository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -37,7 +38,11 @@ public class BookService {
     }
 
     public List<Book> findBooksByAuthorName(String authorName) {
-        return bookRepository.findBooksByAuthorName(authorName);
+        return bookRepository.findByAuthorName(authorName);
+    }
+
+    public List<Genre> getAllGenre() {
+        return Arrays.asList(Genre.values());
     }
 
     public List<Book> findBooksByPublishedYear(int publishedYear) {
