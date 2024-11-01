@@ -20,4 +20,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByAuthorName(@Param("author_name") String author_name);
 
     List<Book> findByPublishedYear(int publishedYear);
+
+
 }

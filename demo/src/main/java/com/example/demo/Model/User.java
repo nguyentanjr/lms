@@ -9,8 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -39,12 +39,7 @@ public class User {
     @Column(nullable = false)
     private Date registration_date;
 
-    @ManyToMany
-    @JoinTable(
-            name="user_book",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="book_id")
-    )
-    private Set<Book> books = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private List<UserBook> userBooks = new ArrayList<>();
 
 }

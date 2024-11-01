@@ -27,7 +27,7 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Book findBookById(long bookId) {
+    public Book findBookByBookId(long bookId) {
         return bookRepository.findById(bookId);
     }
 
@@ -49,25 +49,14 @@ public class BookService {
         return bookRepository.findByPublishedYear(publishedYear);
     }
 
-
-    public Book borrowBooks(long bookId,int quantity) {
-        Book book = findBookById(bookId);
-        if (!book.isAvailable()) {
-            throw new IllegalArgumentException("Book is not available for borrowing.");
-        }
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero.");
-        }
-        if (quantity > book.getCopiesAvailable()) {
-            throw new IllegalArgumentException("Not enough copies available to borrow the requested quantity.");
-        }
-        book.setCopiesAvailable(book.getCopiesAvailable() - quantity);
-        if (book.getCopiesAvailable() == 0) {
-            book.setAvailable(false);
-        }
+    public void updateCopiesAvailable(long id,int copies) {
+        Book book = bookRepository.findById(id);
+        book.setCopiesAvailable(copies);
         bookRepository.save(book);
-        return book;
     }
+
+
+
 
 
 

@@ -1,94 +1,207 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Book List</title>
-    <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Library Book List</title>
+        <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: #f8f9fa;
+                font-family: Arial, sans-serif;
+            }
 
-        .container {
-            margin-top: 50px;
-        }
-    </style>
-</head>
-<body>
-<div class="container text-center">
-    <h2 class="text-center mb-4">Library Book List</h2>
+            .container {
+                margin-top: 50px;
+            }
 
-    <div class="search-container">
-        <!-- Form tìm kiếm... -->
+        </style>
+    </head>
+    <body>
+    <div class="container text-center">
+        <h2 class="text-center mb-4">Library Book List</h2>
+
+        <div class="search-container">
+            <form action="/book_list/find" method="get">
+                <label for="book_name">Search by name:</label>
+                <input id="book_name" name="bookName">
+                <button type="submit">Search</button>
+            </form>
+            <br>
+            <form action="/book_list/find" method="get">
+                <label for="author_name">Search by author:</label>
+                <input id="author_name" name="authorName">
+                <button type="submit">Search</button>
+                <br>
+            </form>
+            <form action="/book_list/find" method="get">
+                <label for="genre">Genre</label>
+                <select id="genre" name="genre" onchange="this.form.submit()">
+                    <option class="handleGenre"></option>
+                    <option th:each="genre : ${genres}"
+                            th:text="${genre}">
+                    </option>
+                </select>
+            </form>
+        </div>
+
+    <!-- Book Data -->
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Published Year</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="bookListTable">
+            <tr th:each="book : ${books}">
+                <td class="book-id" th:text="${book.id}"></td>
+                <td th:text="${book.name}"></td>
+                <td th:text="${book.getAuthor()}"></td>
+                <td th:text="${book.genre}"></td>
+                <td th:text="${book.publishedYear}"></td>
+                <td>
+                    <span th:if="${book.status} == 'Available'"
+                          class="badge badge-success success" th:text="${book.status}">
+                    </span>
+                    <span th:if="${book.status} == 'Checked Out'"
+                          class="badge badge-danger danger" th:text="${book.status}">
+                    </span>
+
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary borrow" id="modalButton" data-toggle="modal"
+                            onclick="outputBorrow()" th:if="${book.status == 'Available'}">Borrow</button>
+                    <a class="btn btn-info">Add to cart</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Author</th>
-            <th>Genre</th>
-            <th>Published Year</th>
-            <th>Copies Available</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody id="bookListTable">
-        <tr th:each="book : ${books}">
-            <td class="book_id" th:text="${book.id}"></td>
-            <td th:text="${book.name}"></td>
-            <td th:text="${book.getAuthor()}"></td>
-            <td th:text="${book.genre}"></td>
-            <td th:text="${book.publishedYear}"></td>
-            <td th:text="${book.copiesAvailable}"></td>
-            <td>
-                <button type = "button" class = "btn btn-primary borrow" id = "modalButton" data-toggle = "modal" data-target = "#exampleModal">
-                    Borrow
-                </button>
-                <a class="btn btn-info">Add to cart</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+    <!-- Show confirm notification   -->
 
-<!-- Modal chỉ xuất hiện một lần -->
-<div class="modal fade" id = "exampleModal" tabindex="-1" role="dialog" aria-labelledby="confirmBorrowModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmBorrowModalLabel">Confirm Borrow</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you sure to borrow this book?
-            </div>
-            <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary confirm" onclick="confirmModal()">Confirm</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+    <div class="modal fade" id="exampleModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmBorrowModalLabel">Confirm
+                        Borrow</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure to borrow this book?
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary confirm">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- jQuery và Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script>
-   var $currentRow;
-   $(document).on("click",".borrow",function () {
-        $currentRow = $(this).parents("tr");
-   })
-   $(document).on("click",".confirm",function () {
-       $currentRow = $(this).closest("tr");
-        window.location.href = "book_list/borrow/" + $currentRow.find(".book_id").text();
-   })
-</script>
-</body>
-</html>
+    <!-- Show user borrows a book again notification   -->
+
+    <div class="modal fade" id="hasBorrowed">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Notification</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You had already borrowed this book. Please choose another one!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="badge-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Show success notification   -->
+
+    <div class="modal fade" id="successModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Success</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You have successfully borrowed the book!
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-success" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery và Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script>
+        let $currentRow;
+        let bookId;
+        /* Choose which modal to display */
+        function outputBorrow() {
+            $(document).on("click", ".borrow", function () {
+                $currentRow = $(this).parents("tr");
+                bookId = $currentRow.find(".book-id").text();
+                $.ajax({
+                    url: "/book_list/borrowed_check/" + bookId,
+                    method: "get",
+                    success: function (response) {
+                        if(response) {
+                            $("#hasBorrowed").modal("show");
+                        }
+                        else {
+                            $("#exampleModal").modal("show");
+                        }
+                    }
+                })
+
+            });
+        }
+        /* Handle confirm */
+        $(document).on("click", ".confirm", function () {
+
+            $.ajax({
+                url: "/book_list/get_copies/" + bookId,
+                method: "get",
+                success: function (response) {
+                    let availableCopies = response - 1;
+                    $.ajax({
+                        url: "/book_list/borrow/" + bookId,
+                        method: "get",
+                        data: {copies: availableCopies},
+                    })
+                    if (availableCopies === 0) {
+                        $currentRow.find(".borrow").hide();
+                        $currentRow.find(".success").hide();
+                    }
+                }
+            })
+            $("#exampleModal").modal("hide");
+            $("#successModal").modal("show");
+
+
+        })
+
+
+    </script>
+    </body>
+    </html>

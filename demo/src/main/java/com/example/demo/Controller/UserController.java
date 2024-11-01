@@ -2,11 +2,14 @@ package com.example.demo.Controller;
 
 import com.example.demo.Model.Book;
 import com.example.demo.Model.User;
+import com.example.demo.Model.UserBook;
 import com.example.demo.Respository.UserRepository;
 import com.example.demo.Service.BookService;
+import com.example.demo.Service.UserBookService;
 import com.example.demo.Service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,13 +22,13 @@ import java.util.Optional;
 @Controller
 public class UserController {
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
     @Autowired
     private BookService bookService;
+    @Autowired
+    private UserBookService userBookService;
     @GetMapping("/register")
     public String register(Authentication authentication) {
         if (authentication != null) {
@@ -42,7 +45,7 @@ public class UserController {
             return "register";
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        userService.saveUser(user);
         return "redirect:/login";
     }
     @GetMapping("/login")
@@ -57,19 +60,6 @@ public class UserController {
         return "user_dashboard";
     }
 
-    @GetMapping("/book_list/borrow/{book_id}")
-    public String borrowBook(@PathVariable long book_id) {
-        Book book = bookService.findBookById(book_id);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUserName(authentication.getName()).get();
-        if(book.getCopiesAvailable() > 0) {
-            book.setCopiesAvailable(book.getCopiesAvailable() - 1);
-            user.getBooks().add(book);
-            book.getUsers().add(user);
-            userService.saveUser(user);
-            bookService.saveBook(book);
-        }
-        return "redirect:/book_list";
-    }
+
 
 }

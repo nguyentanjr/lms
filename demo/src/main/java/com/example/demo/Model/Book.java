@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,17 +32,17 @@ public class Book {
 
     private int copiesAvailable;
 
-    @ManyToMany(mappedBy = "books")
-    private Set<User> users = new HashSet<>();
-
     @ManyToOne
     @JoinColumn(name = "author_id")
     @JsonIgnore
     Author author;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Transaction> transactionList;
+    @OneToMany(mappedBy = "book")
+    List<UserBook> userBooks = new ArrayList<>();
+
+    public String getStatus() {
+        return copiesAvailable > 0 ? "Available" : "Checked Out";
+    }
 
 
 
