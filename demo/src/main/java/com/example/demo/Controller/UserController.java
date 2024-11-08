@@ -1,17 +1,10 @@
 package com.example.demo.Controller;
 
-import com.example.demo.Model.Book;
 import com.example.demo.Model.User;
-import com.example.demo.Model.UserBook;
-import com.example.demo.Respository.UserRepository;
-import com.example.demo.Service.BookService;
-import com.example.demo.Service.UserBookService;
-import com.example.demo.Service.UserService;
+import com.example.demo.Services.Service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,10 +18,6 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
-    @Autowired
-    private BookService bookService;
-    @Autowired
-    private UserBookService userBookService;
     @GetMapping("/register")
     public String register(Authentication authentication) {
         if (authentication != null) {

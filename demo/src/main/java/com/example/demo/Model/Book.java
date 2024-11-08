@@ -1,10 +1,12 @@
 package com.example.demo.Model;
 import com.example.demo.Model.Enum.Genre;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.*;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,30 +22,34 @@ public class Book {
     @Column(name="book_id")
     private long id;
 
-    private String name;
+    private String title;
 
     @Column(name="status")
     private boolean isAvailable;
 
-    @Enumerated(EnumType.STRING)
-    private Genre genre;
+    @Column(name="published_date")
+    private String publishedDate;
 
-    private int publishedYear;
-
+    @Column(name="copies_available")
     private int copiesAvailable;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    @JsonIgnore
-    Author author;
-
     @OneToMany(mappedBy = "book")
+    @JsonIgnore
     List<UserBook> userBooks = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "book_categories", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name="categories")
+    private List<String> categories;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="book_authors", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name = "author_name")
+    private List<String> authors;
 
     public String getStatus() {
         return copiesAvailable > 0 ? "Available" : "Checked Out";
     }
-
 
 
 }

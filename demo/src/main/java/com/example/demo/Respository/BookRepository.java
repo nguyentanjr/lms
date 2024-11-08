@@ -12,14 +12,11 @@ import java.util.List;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
     Book findById(long bookId);
-    @Query("SELECT b FROM Book b WHERE b.name LIKE %:name%")
-    public List<Book> findBooksByName(@Param("name") String name);
+    @Query("SELECT b FROM Book b WHERE b.title LIKE %:title%")
+    public List<Book> findBooksByTitle(String title);
+    @Query("SELECT b FROM Book b WHERE :authorName MEMBER OF b.authors")
+    public List<Book> findBooksByAuthor(String authorName);
 
-    List<Book> findByGenre(Genre genre);
-    //@Query("SELECT a FROM Author a WHERE a.name LIKE %:author_name%")
-    List<Book> findByAuthorName(@Param("author_name") String author_name);
-
-    List<Book> findByPublishedYear(int publishedYear);
 
 
 }

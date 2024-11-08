@@ -1,15 +1,18 @@
 package com.example.demo.Controller;
 
-import com.example.demo.DTO.BorrowRequest;
+import com.example.demo.DTO.BookDTO;
 import com.example.demo.Model.Book;
+import com.example.demo.Model.Cart;
 import com.example.demo.Model.Enum.Genre;
 import com.example.demo.Model.User;
 import com.example.demo.Model.UserBook;
-import com.example.demo.Respository.BookRepository;
-import com.example.demo.Respository.UserBookRepository;
-import com.example.demo.Service.BookService;
-import com.example.demo.Service.UserBookService;
-import com.example.demo.Service.UserService;
+import com.example.demo.Services.Service.BookService;
+import com.example.demo.Services.Service.UserBookService;
+import com.example.demo.Services.Service.UserService;
+import com.example.demo.Services.ServiceImpls.UserBookServiceImpl;
+import com.example.demo.Services.ServiceImpls.UserServiceImpl;
+import jakarta.servlet.http.HttpSession;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +22,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@SessionAttributes("bookList")
 public class BookController {
     @Autowired
     private BookService bookService;
@@ -30,11 +34,17 @@ public class BookController {
     private UserService userService;
     @Autowired
     private UserBookService userBookService;
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @ModelAttribute("bookList")
+    public List<Book> bookList() {
+        return new ArrayList<>();
+    }
 
     @GetMapping("/book_list")
     public String getAllBooks(Model model) {
         model.addAttribute("books", bookService.getAllBooks());
-        model.addAttribute("genres", bookService.getAllGenre());
         return "book_list";
     }
 
@@ -52,47 +62,48 @@ public class BookController {
         return ResponseEntity.ok(userBookService.hasUserBorrowedBook(user.getId(), bookId));
     }
 
-    @GetMapping("/book_list/borrow/{book_id}")
-    public ResponseEntity<String> borrowBook(@PathVariable long book_id, int copies) {
+    @GetMapping("/book_list/borrow")
+    public ResponseEntity<String> borrowBook(long bookId, int copies, @ModelAttribute List<BookDTO> cartList) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Book book = bookService.findBookByBookId(book_id);
         User user = userService.findUserByUserName(authentication.getName()).get();
+        Book book = bookService.findBookByBookId(bookId);
         if (userBookService.hasUserBorrowedBook(user.getId(), book.getId())) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("You had already borrow this book!");
         }
         if (book.getCopiesAvailable() > 0) {
             book.setCopiesAvailable(copies);
-            ;
             userBookService.save(new UserBook(user, book));
         }
         return ResponseEntity.ok("Successfull");
     }
 
+
     @GetMapping("/book_list/find")
     public String findBooks(
-            @RequestParam(required = false) String bookName,
-            @RequestParam(required = false) String authorName,
-            @RequestParam(required = false) String genre, Model model
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String authorName, Model model
     ) {
-        if (bookName != null) {
-            model.addAttribute("books", bookService.findBooksByName(bookName));
+        if (title != null) {
+            model.addAttribute("books", bookService.findBooksByTitle(title));
         } else if (authorName != null) {
-            model.addAttribute("books", bookService.findBooksByAuthorName(authorName));
-        } else if (genre != null) {
-            model.addAttribute("books", bookService.findBooksByGenre(Genre.valueOf(genre)));
-            model.addAttribute("selectedGenre", genre);
+            model.addAttribute("books", bookService.findBookByAuthor(authorName));
         }
-        model.addAttribute("genres", bookService.getAllGenre());
         return "book_list";
     }
-
-
-    //Endpoint để xóa cột
-//    @PostMapping("/drop-column")
-//    public String dropColumn() {
-//        bookService.dropColumn();
-//        return "Column dropped successfully";
-//    }
-
+    @PostMapping("/cart-borrow")
+    public ResponseEntity<String> borrowedFromCart(@RequestBody List<BookDTO> bookDTOList,
+                                                   @ModelAttribute("cart") Cart cart, HttpSession session) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByUserName(authentication.getName()).get();
+        List<UserBook> userBooks = new ArrayList<>();
+        for(BookDTO bookDTO : bookDTOList) {
+            Book book = modelMapper.map(bookDTO,Book.class);
+            userBooks.add(new UserBook(user, book));
+            cart.getBookList().clear();
+            session.setAttribute("cart", cart);
+        }
+        userBookService.saveAll(userBooks);
+        return ResponseEntity.ok("Success");
+    }
 
 }

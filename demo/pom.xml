@@ -14,7 +14,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>demo</name>
     <description>demo</description>
-
     <properties>
         <java.version>17</java.version> <!-- Consider using Java 17 (LTS) instead of 23 -->
         <flyway.user>root</flyway.user>
@@ -120,6 +119,10 @@
             <version>3.1.0.RELEASE</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.11.2</version>
@@ -135,6 +138,15 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.11.2</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -190,12 +202,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>10.17.0</version>
-            </plugin>
         </plugins>
     </build>
-
 </project>

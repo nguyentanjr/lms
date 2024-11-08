@@ -1,7 +1,8 @@
-package com.example.demo.Service;
+package com.example.demo.Services.ServiceImpls;
 
 import com.example.demo.Model.User;
 import com.example.demo.Respository.UserRepository;
+import com.example.demo.Services.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserServiceImpl implements UserDetailsService,UserService{
     @Autowired
     private UserRepository userRepository;
     @Override

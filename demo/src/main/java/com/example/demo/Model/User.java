@@ -1,6 +1,7 @@
 package com.example.demo.Model;
 import com.example.demo.Model.Enum.AccountStatus;
 import com.example.demo.Model.Enum.Gender;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,6 +41,8 @@ public class User {
     private Date registration_date;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<UserBook> userBooks = new ArrayList<>();
+
 
 }

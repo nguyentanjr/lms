@@ -1,4 +1,4 @@
-package com.example.demo.Service;
+package com.example.demo.Services.ServiceImpls;
 
 import com.example.demo.Model.Card;
 import com.example.demo.Model.CardStatus;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class StudentService {
+public class StudentServiceImpl {
     @Autowired
     private StudentRepository studentRepository;
 

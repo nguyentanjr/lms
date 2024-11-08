@@ -1,207 +1,364 @@
-    <!DOCTYPE html>
-    <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Library Book List</title>
-        <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            body {
-                background-color: #f8f9fa;
-                font-family: Arial, sans-serif;
-            }
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Book List</title>
+    <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
 
-            .container {
-                margin-top: 50px;
-            }
+        .container {
+            margin-top: 50px;
+        }
 
-        </style>
-    </head>
-    <body>
-    <div class="container text-center">
-        <h2 class="text-center mb-4">Library Book List</h2>
+        .cart-icon {
+            display: flex;
+            width: 50px;
+            height: 50px;
+        }
 
-        <div class="search-container">
-            <form action="/book_list/find" method="get">
-                <label for="book_name">Search by name:</label>
-                <input id="book_name" name="bookName">
-                <button type="submit">Search</button>
-            </form>
+        .cart-table {
+            display: block;
+        }
+
+        .cart-body {
+            display: block;
+            height: 400px;
+            overflow-y: auto;
+            width: auto;
+        }
+
+        .cart-notification {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            z-index: 999;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container text-center">
+    <h2 class="text-center mb-4">Library Book List</h2>
+
+    <div class="search-container">
+        <form action="/book_list/find" method="get">
+            <label for="title">Search by title:</label>
+            <input id="title" name="title">
+            <button type="submit">Search</button>
+        </form>
+        <br>
+        <form action="/book_list/find" method="get">
+            <label for="author_name">Search by author:</label>
+            <input id="author_name" name="authorName">
+            <button type="submit">Search</button>
             <br>
-            <form action="/book_list/find" method="get">
-                <label for="author_name">Search by author:</label>
-                <input id="author_name" name="authorName">
-                <button type="submit">Search</button>
-                <br>
-            </form>
-            <form action="/book_list/find" method="get">
-                <label for="genre">Genre</label>
-                <select id="genre" name="genre" onchange="this.form.submit()">
-                    <option class="handleGenre"></option>
-                    <option th:each="genre : ${genres}"
-                            th:text="${genre}">
-                    </option>
-                </select>
-            </form>
-        </div>
-
+        </form>
+    </div>
+    <div class="cart-ico">
+        <img src="https://png.pngtree.com/element_our/20190531/ourmid/pngtree-shopping-cart-convenient-icon-image_1287807.jpg"
+             alt="Giỏ hàng" class="myCart">
+        <a href="book_list/add-to-cart" class="cart">Cart</a>
+    </div>
     <!-- Book Data -->
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Author</th>
-                <th>Genre</th>
-                <th>Published Year</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody id="bookListTable">
-            <tr th:each="book : ${books}">
-                <td class="book-id" th:text="${book.id}"></td>
-                <td th:text="${book.name}"></td>
-                <td th:text="${book.getAuthor()}"></td>
-                <td th:text="${book.genre}"></td>
-                <td th:text="${book.publishedYear}"></td>
-                <td>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Categories</th>
+            <th>PublishedDate</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="bookListTable">
+        <tr th:each="book : ${books}">
+            <td class="book-id" th:text="${book.id}"></td>
+            <td th:text="${book.title}"></td>
+            <td>
+                <ul th:each="author : ${book.authors}" class="list-unstyled">
+                    <li th:text="${author}"></li>
+                </ul>
+            </td>
+            <td>
+                <ul th:each="category : ${book.categories}" class="list-unstyled">
+                    <li th:text="${category}"></li>
+                </ul>
+            </td>
+            <td th:text="${book.publishedDate}"></td>
+            <td>
                     <span th:if="${book.status} == 'Available'"
                           class="badge badge-success success" th:text="${book.status}">
                     </span>
-                    <span th:if="${book.status} == 'Checked Out'"
-                          class="badge badge-danger danger" th:text="${book.status}">
+                <span th:if="${book.status} == 'Checked Out'"
+                      class="badge badge-danger danger" th:text="${book.status}">
                     </span>
 
-                </td>
-                <td>
-                    <button type="button" class="btn btn-primary borrow" id="modalButton" data-toggle="modal"
-                            onclick="outputBorrow()" th:if="${book.status == 'Available'}">Borrow</button>
-                    <a class="btn btn-info">Add to cart</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary borrow" id="modalButton" data-toggle="modal"
+                        onclick="outputBorrow()" th:if="${book.status == 'Available'}">Borrow
+                </button>
+                <button type="button" class="btn btn-secondary cart" th:if="${book.status == 'Available'}">Add to cart
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
-    <!-- Show confirm notification   -->
+<!-- Show confirm notification   -->
 
-    <div class="modal fade" id="exampleModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmBorrowModalLabel">Confirm
-                        Borrow</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Are you sure to borrow this book?
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary confirm">Confirm</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                </div>
+<div class="modal fade" id="exampleModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmBorrowModalLabel">Confirm Borrow</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure to borrow this book?
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary confirm">Confirm</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Show user borrows a book again notification   -->
+<!-- Show user borrows a book again notification   -->
 
-    <div class="modal fade" id="hasBorrowed">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Notification</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    You had already borrowed this book. Please choose another one!
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="badge-dark" data-dismiss="modal">Close</button>
-                </div>
+<div class="modal fade" id="hasBorrowed">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notification</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You had already borrowed this book. Please choose another one!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="badge-dark" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Show success notification   -->
+<!-- Show success notification   -->
 
-    <div class="modal fade" id="successModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Success</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    You have successfully borrowed the book!
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-success" data-dismiss="modal">Close</button>
-                </div>
+<div class="modal fade" id="successModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Success</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You have successfully borrowed the book!
+            </div>
+            <div class="modal-footer">
+                <button class="btn-success" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- jQuery và Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    <script>
-        let $currentRow;
-        let bookId;
-        /* Choose which modal to display */
-        function outputBorrow() {
-            $(document).on("click", ".borrow", function () {
-                $currentRow = $(this).parents("tr");
-                bookId = $currentRow.find(".book-id").text();
-                $.ajax({
-                    url: "/book_list/borrowed_check/" + bookId,
-                    method: "get",
-                    success: function (response) {
-                        if(response) {
-                            $("#hasBorrowed").modal("show");
-                        }
-                        else {
-                            $("#exampleModal").modal("show");
-                        }
-                    }
-                })
+<!-- Show cart   -->
 
-            });
-        }
-        /* Handle confirm */
-        $(document).on("click", ".confirm", function () {
+<div class="modal fade" id="cart">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Borrowing Wishlist</h5>
+                <button type="button" class="close-cart" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped cart-table">
+                    <thead>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Categories</th>
+                    </thead>
+                    <tbody class="cart-body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary cart-confirm">Confirm</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="cart-notification">
+    <div class="cart-notification-content">
+        <p class="cart-notification-text"></p>
+    </div>
+</div>
 
+<!-- jQuery và Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script>
+    let $currentRow;
+    let bookId;
+
+    /* Choose which modal to display */
+    function outputBorrow() {
+        $(document).on("click", ".borrow", function () {
+            $currentRow = $(this).parents("tr");
+            bookId = $currentRow.find(".book-id").text();
             $.ajax({
-                url: "/book_list/get_copies/" + bookId,
+                url: "/book_list/borrowed_check/" + bookId,
                 method: "get",
                 success: function (response) {
-                    let availableCopies = response - 1;
-                    $.ajax({
-                        url: "/book_list/borrow/" + bookId,
-                        method: "get",
-                        data: {copies: availableCopies},
-                    })
-                    if (availableCopies === 0) {
-                        $currentRow.find(".borrow").hide();
-                        $currentRow.find(".success").hide();
+                    if (response) {
+                        $("#hasBorrowed").modal("show");
+                    } else {
+                        $("#exampleModal").modal("show");
                     }
                 }
             })
-            $("#exampleModal").modal("hide");
-            $("#successModal").modal("show");
 
+        });
+    }
 
+    /* Handle confirm */
+    $(document).on("click", ".confirm", function () {
+
+        $.ajax({
+            url: "/book_list/get_copies/" + bookId,
+            method: "get",
+            success: function (response) {
+                let availableCopies = response - 1;
+                $.ajax({
+                    url: "/book_list/borrow",
+                    method: "get",
+                    data: {
+                        copies: availableCopies,
+                        bookId: bookId
+                    },
+                })
+                if (availableCopies === 0) {
+                    $currentRow.find(".borrow").hide();
+                    $currentRow.find(".success").hide();
+                }
+            }
         })
+        $("#exampleModal").modal("hide");
+        $("#successModal").modal("show");
+    })
+    /*
+    Add to cart
+     */
+    $(document).on("click", ".cart", function () {
+        $currentRow = $(this).parents("tr");
+        bookId = $currentRow.find(".book-id").text();
+        $(".cart-notification").fadeIn("show");
+        setTimeout(function () {
+            $(".cart-notification").fadeOut('hide');
+        }, 600);
+        $.ajax({
+            url: "/check-book-in-cart",
+            method: "get",
+            data: {bookId},
+            success: function (response) {
+                if (response === "in cart") {
+                    $(".cart-notification-text").text("You had already add it to cart!");
+                } else if (response === "not in cart") {
+                    $(".cart-notification-text").text("Success");
+                } else {
+                    $(".cart-notification-text").text("You had already borrowed this book!");
+                }
+            }
+        })
+        $.ajax({
+            url: "/add_to_cart",
+            method: "get",
+            data: {bookId},
+            success: "OK"
+        })
+    })
+    /*
+    show list cart
+     */
+    $(document).on("click", ".myCart", function () {
+        $("#cart").modal("show");
+        $.ajax({
+            url: "/cart_list",
+            method: "get",
+            success: function (response) {
+                if (response.length === 0) {
+                    $(".cart-confirm").hide();
+                }
+                $(".cart-table tbody").empty();
+                response.forEach(item => {
+                    let row = `
+                        <tr data-item-id = ${item.id}>
+                            <td>${item.id}</td>
+                            <td>${item.title}</td>
+                            <td>${item.categories}</td>
+                            <td>${item.authors}</td>
+                            <td>
+                            <button type="button" class="cart-remove-book">
+                            <span>&times;</span>
+                            </button>
+                            </td>
+                        </tr>
+`;
+                    $(".cart-table tbody").append(row);
+                });
+                $(document).on("click",".cart-remove-book",function () {
+                        $(this).closest("tr").remove();
+                        var itemId  = $(this).closest("tr").data("item-id");
+                        console.log(itemId);
+                    $.ajax({
+                        url: "/remove-book-in-cart",
+                        method: "get",
+                        data: {bookId: itemId}
+                    })
+                })
+                $(document).on("click", ".cart-confirm", function () {
+                    $("#cart").modal("hide");
+                    $("#successModal").modal("show");
+                    $(".cart-table tbody").empty();
+                    $.ajax({
+                        url: "/cart-borrow",
+                        method: "post",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(response)
+                    })
+                    response = {};
+                })
+            }
+        })
+    })
 
-
-    </script>
-    </body>
-    </html>
+</script>
+</body>
+</html>

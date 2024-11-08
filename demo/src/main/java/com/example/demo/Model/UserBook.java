@@ -1,5 +1,6 @@
 package com.example.demo.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,9 +19,11 @@ public class UserBook {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
     @ManyToOne
     @JoinColumn(name = "book_id")
+    @JsonIgnore
     private Book book;
 
     public UserBook() {}
