@@ -1,6 +1,7 @@
 package com.example.demo.Services.ServiceImpls;
 
 import com.example.demo.Model.Book;
+import com.example.demo.Model.UserBook;
 import com.example.demo.Respository.BookRepository;
 import com.example.demo.Services.Service.BookService;
 import com.example.demo.config.APIKeyConfig;
@@ -105,4 +106,9 @@ public class BookServiceImpl implements BookService {
         book.setCopiesAvailable(copiesAvailable);
         return book;
     }
+
+    public void removeBookById(long bookId) {
+        bookRepository.removeBookById(bookId);
+    }
+
 }

@@ -43,8 +43,11 @@ public class BookController {
     }
 
     @GetMapping("/book_list")
-    public String getAllBooks(Model model) {
+    public String getAllBooks(Model model,@ModelAttribute("cart")Cart cart) {
         model.addAttribute("books", bookService.getAllBooks());
+        for(BookDTO bookDTOList : cart.getBookList()) {
+            System.out.println(bookDTOList.getId());
+        }
         return "book_list";
     }
 
@@ -104,6 +107,13 @@ public class BookController {
         }
         userBookService.saveAll(userBooks);
         return ResponseEntity.ok("Success");
+    }
+
+    @GetMapping("/remove-book")
+    public ResponseEntity<String> removeBook(long bookId) {
+        userBookService.unassignBookFromUsers(bookId);
+        bookService.removeBookById(bookId);
+        return ResponseEntity.ok("Book removed successfully");
     }
 
 }

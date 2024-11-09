@@ -24,8 +24,6 @@ public class Book {
 
     private String title;
 
-    @Column(name="status")
-    private boolean isAvailable;
 
     @Column(name="published_date")
     private String publishedDate;

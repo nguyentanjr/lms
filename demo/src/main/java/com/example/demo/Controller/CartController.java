@@ -56,27 +56,25 @@ public class CartController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUserName(authentication.getName()).get();
         cart.getBookList().removeIf(bookDTO -> userBookService.hasUserBorrowedBook(user.getId(), bookDTO.getId()));
-        for(BookDTO bookDTOList : cart.getBookList()) {
-            System.out.println(bookDTOList.getId());
-        }
         return cart.getBookList();
     }
     @GetMapping("/check-book-in-cart")
     public ResponseEntity<String> checkInCart(long bookId,@ModelAttribute("cart") Cart cart) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUserName(authentication.getName()).get();
-        if(userBookService.hasUserBorrowedBook(user.getId(),bookId)) {
-            return ResponseEntity.ok("has borrowed");
-        }
         if(cartService.checkBookInCart(bookId,cart)) {
             return ResponseEntity.ok("in cart");
         }
+        if(userBookService.hasUserBorrowedBook(user.getId(),bookId)) {
+            return ResponseEntity.ok("has borrowed");
+        }
         return ResponseEntity.ok("not in cart");
+
     }
 
     @GetMapping("/remove-book-in-cart")
-    public ResponseEntity<String> removeBook(long bookId, @ModelAttribute("cart") Cart cart, HttpSession session) {
+    public ResponseEntity<List<BookDTO>> removeBook(long bookId, @ModelAttribute("cart") Cart cart, HttpSession session) {
         cartService.removeBookInCart(bookId,cart);
-        return ResponseEntity.ok("SUCCESS");
+        return ResponseEntity.ok(cart.getBookList());
     }
 }

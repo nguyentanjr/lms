@@ -38,5 +38,4 @@ public class CartServiceImpl implements CartService {
         BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
         cart.getBookList().remove(bookDTO);
     }
-
 }

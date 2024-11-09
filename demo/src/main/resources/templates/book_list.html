@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Book List</title>
     <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
     <style>
         body {
             background-color: #f8f9fa;
@@ -45,6 +46,29 @@
             font-size: 16px;
             z-index: 999;
         }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1055;
+        }
+
+        @keyframes slide-in-right {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Áp dụng hiệu ứng cho Toast */
+        .toast {
+            animation: slide-in-right 0.5s ease-out;
+        }
+
 
     </style>
 </head>
@@ -109,11 +133,22 @@
 
             </td>
             <td>
-                <button type="button" class="btn btn-primary borrow" id="modalButton" data-toggle="modal"
-                        onclick="outputBorrow()" th:if="${book.status == 'Available'}">Borrow
-                </button>
-                <button type="button" class="btn btn-secondary cart" th:if="${book.status == 'Available'}">Add to cart
-                </button>
+                <div style="display: flex; gap: 3px;">
+                <button class="btn btn-warning" sec:authorize="hasRole('ADMIN')">Edit</button>
+                <button class="btn btn-danger remove-book" sec:authorize="hasRole('ADMIN')">Remove</button>
+                </div>
+                <div style="display: flex; gap: 3px;">
+                    <button class="btn btn-info borrow" id="modalButton" data-toggle="modal"
+                            th:if="${book.status == 'Available'}" onclick="outputBorrow()"
+                            sec:authorize="hasRole('USER')">Borrow</button>
+                    <button class="btn btn-warning cart" type="button" th:if="${book.status == 'Available'}"
+                            sec:authorize="hasRole('USER')">Add to cart
+                    </button>
+                </div>
+
+
+
+
             </td>
         </tr>
         </tbody>
@@ -126,13 +161,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmBorrowModalLabel">Confirm Borrow</h5>
+                <h5 class="modal-title" id="confirmBorrowModalLabel">Notification</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                Are you sure to borrow this book?
+            <div class="modal-body text-message">
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary confirm">Confirm</button>
@@ -214,25 +248,26 @@
         </div>
     </div>
 </div>
-<div class="cart-notification">
-    <div class="cart-notification-content">
-        <p class="cart-notification-text"></p>
-    </div>
-</div>
+
 
 <!-- jQuery và Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
 <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+
 <script>
-    let $currentRow;
-    let bookId;
+    /*
+    USER CONTROLLER
+     */
 
     /* Choose which modal to display */
+    let currentRow;
+    let bookId;
     function outputBorrow() {
         $(document).on("click", ".borrow", function () {
-            $currentRow = $(this).parents("tr");
-            bookId = $currentRow.find(".book-id").text();
+            currentRow = $(this).parents("tr");
+            bookId = currentRow.find(".book-id").text();
             $.ajax({
                 url: "/book_list/borrowed_check/" + bookId,
                 method: "get",
@@ -240,6 +275,7 @@
                     if (response) {
                         $("#hasBorrowed").modal("show");
                     } else {
+                        $(".text-message").text("Are you sure to borrow this book?")
                         $("#exampleModal").modal("show");
                     }
                 }
@@ -265,8 +301,9 @@
                     },
                 })
                 if (availableCopies === 0) {
-                    $currentRow.find(".borrow").hide();
-                    $currentRow.find(".success").hide();
+                    currentRow.find(".borrow").hide();
+                    currentRow.find(".success").hide();
+                    currentRow.find(".cart").hide();
                 }
             }
         })
@@ -277,23 +314,32 @@
     Add to cart
      */
     $(document).on("click", ".cart", function () {
-        $currentRow = $(this).parents("tr");
-        bookId = $currentRow.find(".book-id").text();
-        $(".cart-notification").fadeIn("show");
-        setTimeout(function () {
-            $(".cart-notification").fadeOut('hide');
-        }, 600);
+        currentRow = $(this).parents("tr");
+        bookId = currentRow.find(".book-id").text();
+            toastr.options = {
+                "closeButton": true,
+                "newestOnTop": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": true,
+                "timeOut": "5000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
         $.ajax({
             url: "/check-book-in-cart",
             method: "get",
-            data: {bookId},
+            data: {bookId : bookId},
             success: function (response) {
-                if (response === "in cart") {
-                    $(".cart-notification-text").text("You had already add it to cart!");
-                } else if (response === "not in cart") {
-                    $(".cart-notification-text").text("Success");
-                } else {
-                    $(".cart-notification-text").text("You had already borrowed this book!");
+                if(response === "has borrowed") {
+                    toastr.warning("ID " + bookId + ": You had already borrowed this book!");
+                }
+                if(response === "in cart") {
+                    toastr.error("ID " + bookId + ": You had already add it to cart!");
+                }
+                if(response === "not in cart") {
+                    toastr.success("ID " + bookId + ": Successful add to cart");
                 }
             }
         })
@@ -316,6 +362,9 @@
                 if (response.length === 0) {
                     $(".cart-confirm").hide();
                 }
+                else {
+                    $(".cart-confirm").show();
+                }
                 $(".cart-table tbody").empty();
                 response.forEach(item => {
                     let row = `
@@ -336,11 +385,15 @@
                 $(document).on("click",".cart-remove-book",function () {
                         $(this).closest("tr").remove();
                         var itemId  = $(this).closest("tr").data("item-id");
-                        console.log(itemId);
                     $.ajax({
                         url: "/remove-book-in-cart",
                         method: "get",
-                        data: {bookId: itemId}
+                        data: {bookId: itemId},
+                        success: function (response) {
+                            if (response.length === 0) {
+                                $(".cart-confirm").hide();
+                            }
+                        }
                     })
                 })
                 $(document).on("click", ".cart-confirm", function () {
@@ -358,6 +411,22 @@
             }
         })
     })
+
+
+    /*
+    ADMIN CONTROLLER
+     */
+    $(document).on("click",".remove-book",function () {
+        let editButton = $(this).parents("tr");
+        let bookId = editButton.find(".book-id").text();
+        $("editButton").hide();
+        $.ajax({
+            url: "/remove-book",
+            method: "get",
+            data: {bookId : bookId}
+        })
+    })
+
 
 </script>
 </body>

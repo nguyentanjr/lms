@@ -22,4 +22,6 @@ public interface BookService {
 
     void fetchBooks(String title);
     Book retrieveBookDataFromAPI(JsonNode item);
+
+    void removeBookById(long bookId);
 }

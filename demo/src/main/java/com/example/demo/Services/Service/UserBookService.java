@@ -9,4 +9,5 @@ public interface UserBookService {
     void save(UserBook userBook);
     void saveAll(List<UserBook> userBookList);
     boolean hasUserBorrowedBook(long userId, long bookId);
+    void unassignBookFromUsers(long bookId);
 }

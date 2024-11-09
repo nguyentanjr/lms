@@ -23,4 +23,9 @@ public class UserBookServiceImpl implements UserBookService {
     public boolean hasUserBorrowedBook(long userId, long bookId) {
         return userBookRepository.existsByUserIdAndBookId(userId,bookId) > 0;
     }
+    public void unassignBookFromUsers(long bookId) {
+        UserBook userBook = userBookRepository.findByBookId(bookId);
+            userBook.setBook(null);
+        userBookRepository.save(userBook);
+    }
 }
