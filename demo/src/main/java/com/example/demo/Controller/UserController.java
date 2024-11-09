@@ -1,10 +1,14 @@
 package com.example.demo.Controller;
 
+import com.example.demo.Model.Book;
 import com.example.demo.Model.User;
 import com.example.demo.Services.Service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,6 +53,10 @@ public class UserController {
         return "user_dashboard";
     }
 
-
-
+    @GetMapping("/isUser")
+    public ResponseEntity<Boolean> isUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return ResponseEntity.ok(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
+    }
 }

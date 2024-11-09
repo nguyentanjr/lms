@@ -24,8 +24,10 @@ public class UserBookServiceImpl implements UserBookService {
         return userBookRepository.existsByUserIdAndBookId(userId,bookId) > 0;
     }
     public void unassignBookFromUsers(long bookId) {
-        UserBook userBook = userBookRepository.findByBookId(bookId);
+        List<UserBook> userBooks = userBookRepository.findByBookId(bookId);
+        for(UserBook userBook : userBooks) {
             userBook.setBook(null);
-        userBookRepository.save(userBook);
+            userBookRepository.save(userBook);
+        }
     }
 }

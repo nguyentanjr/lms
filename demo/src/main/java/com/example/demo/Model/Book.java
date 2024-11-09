@@ -24,6 +24,8 @@ public class Book {
 
     private String title;
 
+    @Column(name="hidden")
+    private boolean hidden;
 
     @Column(name="published_date")
     private String publishedDate;

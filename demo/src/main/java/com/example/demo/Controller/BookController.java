@@ -45,9 +45,6 @@ public class BookController {
     @GetMapping("/book_list")
     public String getAllBooks(Model model,@ModelAttribute("cart")Cart cart) {
         model.addAttribute("books", bookService.getAllBooks());
-        for(BookDTO bookDTOList : cart.getBookList()) {
-            System.out.println(bookDTOList.getId());
-        }
         return "book_list";
     }
 
@@ -114,6 +111,24 @@ public class BookController {
         userBookService.unassignBookFromUsers(bookId);
         bookService.removeBookById(bookId);
         return ResponseEntity.ok("Book removed successfully");
+    }
+
+    @GetMapping("/set-hide-book")
+    public ResponseEntity<String> setHideBook(String status,long bookId) {
+        Book book = bookService.findBookByBookId(bookId);
+        if(status.equals("hide")) {
+            book.setHidden(true);
+        }
+        else {
+            book.setHidden(false);
+        }
+        bookService.saveBook(book);
+        return ResponseEntity.ok("Book removed successfully");
+    }
+    @GetMapping("/check-hide-book")
+    public ResponseEntity<Boolean> checkHideBook(long bookId) {
+        Book book = bookService.findBookByBookId(bookId);
+        return ResponseEntity.ok(book.isHidden());
     }
 
 }

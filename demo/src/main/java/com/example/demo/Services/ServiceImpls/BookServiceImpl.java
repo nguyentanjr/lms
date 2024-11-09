@@ -104,6 +104,7 @@ public class BookServiceImpl implements BookService {
         Random random = new Random();
         int copiesAvailable = random.nextInt(5);
         book.setCopiesAvailable(copiesAvailable);
+        book.setHidden(false);
         return book;
     }
 
