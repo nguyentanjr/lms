@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @SessionAttributes("bookList")
@@ -43,7 +44,7 @@ public class BookController {
     }
 
     @GetMapping("/book_list")
-    public String getAllBooks(Model model,@ModelAttribute("cart")Cart cart) {
+    public String getAllBooks(Model model, @ModelAttribute("cart") Cart cart) {
         model.addAttribute("books", bookService.getAllBooks());
         return "book_list";
     }
@@ -90,14 +91,15 @@ public class BookController {
         }
         return "book_list";
     }
+
     @PostMapping("/cart-borrow")
     public ResponseEntity<String> borrowedFromCart(@RequestBody List<BookDTO> bookDTOList,
                                                    @ModelAttribute("cart") Cart cart, HttpSession session) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUserName(authentication.getName()).get();
         List<UserBook> userBooks = new ArrayList<>();
-        for(BookDTO bookDTO : bookDTOList) {
-            Book book = modelMapper.map(bookDTO,Book.class);
+        for (BookDTO bookDTO : bookDTOList) {
+            Book book = modelMapper.map(bookDTO, Book.class);
             userBooks.add(new UserBook(user, book));
             cart.getBookList().clear();
             session.setAttribute("cart", cart);
@@ -114,21 +116,40 @@ public class BookController {
     }
 
     @GetMapping("/set-hide-book")
-    public ResponseEntity<String> setHideBook(String status,long bookId) {
+    public ResponseEntity<String> setHideBook(String status, long bookId) {
         Book book = bookService.findBookByBookId(bookId);
-        if(status.equals("hide")) {
+        if (status.equals("hide")) {
             book.setHidden(true);
-        }
-        else {
+        } else {
             book.setHidden(false);
         }
         bookService.saveBook(book);
         return ResponseEntity.ok("Book removed successfully");
     }
+
     @GetMapping("/check-hide-book")
     public ResponseEntity<Boolean> checkHideBook(long bookId) {
         Book book = bookService.findBookByBookId(bookId);
         return ResponseEntity.ok(book.isHidden());
     }
 
+    @PostMapping("/edit-book")
+    @ResponseBody
+    public ResponseEntity<String> editBook(@RequestBody Book book) {
+        Book myBook = bookService.findBookByBookId(book.getId());
+        if(!book.getTitle().isEmpty()) {
+            myBook.setTitle(book.getTitle());
+        }
+        if(book.getAuthors() != null) {
+            myBook.setAuthors(book.getAuthors());
+        }
+        if(book.getCategories() != null) {
+            myBook.setCategories(book.getCategories());
+        }
+        if(!book.getPublishedDate().isEmpty()) {
+            myBook.setPublishedDate(book.getPublishedDate());
+        }
+        bookService.saveBook(myBook);
+        return ResponseEntity.ok("Successful");
+    }
 }

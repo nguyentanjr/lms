@@ -15,7 +15,7 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
                 grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")
         );
         if (isAdmin)
-            setDefaultTargetUrl("/admin");
+            setDefaultTargetUrl("/dashboard");
         else
             setDefaultTargetUrl("/home");
             super.onAuthenticationSuccess(request, response, authentication);

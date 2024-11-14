@@ -1,14 +1,17 @@
 package com.example.demo.Services.ServiceImpls;
 
+import com.example.demo.DTO.UserDTO;
 import com.example.demo.Model.User;
 import com.example.demo.Respository.UserRepository;
 import com.example.demo.Services.Service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +19,8 @@ import java.util.Optional;
 public class UserServiceImpl implements UserDetailsService,UserService{
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ModelMapper modelMapper;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUserName(username);
@@ -44,11 +49,21 @@ public class UserServiceImpl implements UserDetailsService,UserService{
         return userRepository.countTotalUser("USER");
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        List<UserDTO> userListDTO = new ArrayList<>();
+        List<User> userList = userRepository.findAll();
+        for(User user : userList) {
+            UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+            userListDTO.add(userDTO);
+        }
+        return userListDTO;
     }
 
     public void saveUser(User user) {
         userRepository.save(user);
+    }
+
+    public void removeUser(long userId) {
+        userRepository.deleteById(userId);
     }
 }

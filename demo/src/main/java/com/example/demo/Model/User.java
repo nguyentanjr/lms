@@ -30,7 +30,7 @@ public class User {
     @Column(name="full_name")
     private String fullName;
     @Column(name="phone_number")
-    private int phoneNumber;
+    private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private Gender gender;
     @Column(name="account_status", nullable = false)
@@ -38,7 +38,7 @@ public class User {
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
     @CreationTimestamp
     @Column(nullable = false)
-    private Date registration_date;
+    private Date registrationDate;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore

@@ -1,111 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Sách Đã Mượn</title>
-    <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            margin-top: 20px;
-        }
-        .card {
-            margin-bottom: 20px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Spring Boot WebSocket Chat Application</title>
+    <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
+<noscript>
+    <h2>Sorry! Your browser doesn't support Javascript</h2>
+</noscript>
 
-<div class="container">
-    <h1 class="text-center">Danh Sách Sách Đã Mượn</h1>
-
-    <div class="card">
-        <div class="card-header">
-            <h4>Đang Mượn</h4>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>ID Sách</th>
-                    <th>Tên Sách</th>
-                    <th>Ngày Mượn</th>
-                    <th>Ngày Hạn Trả</th>
-                    <th>Trạng Thái</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Cuốn Sách A</td>
-                    <td>01/10/2024</td>
-                    <td>15/10/2024</td>
-                    <td>Đang mượn</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Cuốn Sách B</td>
-                    <td>02/10/2024</td>
-                    <td>16/10/2024</td>
-                    <td>Đang mượn</td>
-                </tr>
-                <!-- Thêm các sách đang mượn khác tại đây -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h4>Đã Mượn</h4>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>ID Sách</th>
-                    <th>Tên Sách</th>
-                    <th>Ngày Mượn</th>
-                    <th>Ngày Trả</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>3</td>
-                    <td>Cuốn Sách C</td>
-                    <td>01/09/2024</td>
-                    <td>15/09/2024</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Cuốn Sách D</td>
-                    <td>02/09/2024</td>
-                    <td>16/09/2024</td>
-                </tr>
-                <!-- Thêm các sách đã mượn khác tại đây -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h4>Thông Tin Thành Viên</h4>
-        </div>
-        <div class="card-body">
-            <p><strong>Tên:</strong> Nguyễn Văn A</p>
-            <p><strong>Email:</strong> nguyen.vana@example.com</p>
-            <p><strong>Số Điện Thoại:</strong> 0123456789</p>
-            <p><strong>Địa Chỉ:</strong> 123 Đường ABC, Quận 1, TP.HCM</p>
-        </div>
+<div id="username-page">
+    <div class="username-page-container">
+        <h1 class="title">Type your username</h1>
+        <form id="usernameForm" name="usernameForm">
+            <div class="form-group">
+                <input type="text" id="name" placeholder="Username" autocomplete="off" class="form-control" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="accent username-submit">Start Chatting</button>
+            </div>
+        </form>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div id="chat-page" class="hidden">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Spring WebSocket Chat Demo</h2>
+        </div>
+        <div class="connecting">
+            Connecting...
+        </div>
+        <ul id="messageArea">
+
+        </ul>
+        <form id="messageForm" name="messageForm">
+            <div class="form-group">
+                <div class="input-group clearfix">
+                    <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control"/>
+                    <button type="submit" class="primary">Send</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>

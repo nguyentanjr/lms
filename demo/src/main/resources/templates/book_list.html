@@ -6,75 +6,13 @@
     <title>Library Book List</title>
     <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            margin-top: 50px;
-        }
-
-        .cart-icon {
-            display: flex;
-            width: 50px;
-            height: 50px;
-        }
-
-        .cart-table {
-            display: block;
-        }
-
-        .cart-body {
-            display: block;
-            height: 400px;
-            overflow-y: auto;
-            width: auto;
-        }
-
-        .cart-notification {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            z-index: 999;
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1055;
-        }
-
-        @keyframes slide-in-right {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Áp dụng hiệu ứng cho Toast */
-        .toast {
-            animation: slide-in-right 0.5s ease-out;
-        }
-
-        .hidden-row {
-            display: none;
-        }
-
-    </style>
+    <!-- jQuery và Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+    <link href="/static/css/book_list.css" rel="stylesheet" />
+    <script th:src="@{/js/book_list.js}"></script>
 </head>
 <body>
 <div class="container text-center">
@@ -116,18 +54,18 @@
         <tbody id="bookListTable">
         <tr th:each="book : ${books}" class="row-list" th:data-row-id="${book.id}"> <!-- fix this -->
             <td class="book-id" th:text="${book.id}"></td>
-            <td th:text="${book.title}"></td>
-            <td>
+            <td class="book-title" th:text="${book.title}"></td>
+            <td class="book-authors">
                 <ul th:each="author : ${book.authors}" class="list-unstyled">
                     <li th:text="${author}"></li>
                 </ul>
             </td>
-            <td>
+            <td class="book-categories">
                 <ul th:each="category : ${book.categories}" class="list-unstyled">
                     <li th:text="${category}"></li>
                 </ul>
             </td>
-            <td th:text="${book.publishedDate}"></td>
+            <td class="book-publishedDate" th:text="${book.publishedDate}"></td>
             <td>
                     <span th:if="${book.status} == 'Available'"
                           class="badge badge-success success" th:text="${book.status}">
@@ -147,7 +85,8 @@
                 <div style="display: flex; gap: 3px;">
                     <button class="btn btn-info borrow" id="modalButton" data-toggle="modal"
                             th:if="${book.status == 'Available'}" onclick="outputBorrow()"
-                            sec:authorize="hasRole('USER')">Borrow</button>
+                            sec:authorize="hasRole('USER')">Borrow
+                    </button>
                     <button class="btn btn-warning cart" type="button" th:if="${book.status == 'Available'}"
                             sec:authorize="hasRole('USER')">Add to cart
                     </button>
@@ -312,307 +251,81 @@
 </div>
 
 <!-- Modal Edit Book -->
-<div class="modal fade" id="editBookModal" t>
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="editBookModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editBookModalLabel">Edit Book Information</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBookForm">
+                        <div class="form-group">
+                            <label for="titleInput">Book Title</label>
+                            <input type="text" class="form-control" id="titleInput" name="title"
+                                   placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="authorsInput">Author</label>
+                            <small class="form-text text-muted">
+                                If there is more than one author, please separate each author with a comma (',')
+                            </small>
+                            <input type="text" class="form-control" id="authorsInput" name="authors"
+                                   placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="categoriesInput">Categories</label>
+                            <small class="form-text text-muted">
+                                If there is more than one category, please separate each category with a comma (',')
+                            </small>
+                            <input type="text" class="form-control" id="categoriesInput" name="categories"
+                                   placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="publishedDateInput">Published Date</label>
+                            <input type="text" class="form-control" id="publishedDateInput" name="publishedDate"
+                                   placeholder="">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary save-changes" id="saveChangesButton">Save Changes
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Show Success Notification for Editing a Book -->
+<div class="modal fade" id="successModalEditing">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="editBookModalLabel">Edit Book Information</h5>
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    🎉 Edit Successful
+                </h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <form id="editBookForm">
-                    <div class="form-group">
-                        <label for="bookTitle">Book Title</label>
-                        <input type="text" class="form-control" id="bookTitle" name="title"
-                               placeholder="Enter book title" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookAuthor">Author</label>
-                        <input type="text" class="form-control" id="bookAuthor" name="author"
-                               placeholder="Enter author name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookGenre">Categories</label>
-                        <input type="text" class="form-control" id="bookGenre" name="categories"
-                               placeholder="Enter book categories" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookYear">Published Date</label>
-                        <input type="text" class="form-control" id="bookYear" name="year" placeholder="Published Date"
-                               required>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookDescription">Description</label>
-                        <textarea class="form-control" id="bookDescription" name="description" rows="3"
-                                  placeholder="Enter book description" required></textarea>
-                    </div>
-                </form>
+            <div class="modal-body text-center">
+                <p>
+                    <strong>Success!</strong> The book information has been edited successfully
+                </p>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" id="saveChangesButton">Save Changes</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button class="btn btn-outline-success btn-sm" data-dismiss="modal">
+                    Close
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- jQuery và Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
-
 <script>
-    /*
-    USER CONTROLLER
-     */
-
-    /* Choose which modal to display */
-    let currentRow;
-    let bookId;
-
-    $(document).ready(function () {
-        $(".row-list").each(function () {
-            let row = $(this);
-            let bookId = row.find(".book-id").text();
-            $.ajax({
-                url: "/isUser",
-                method: "get",
-                success: function (response) {
-                    if(response) {
-                        $.ajax({
-                            url: "/check-hide-book",
-                            method: "get",
-                            data: {bookId : bookId},
-                            success: function (response) {
-                                if(response) {
-                                    row.addClass("hidden-row");
-                                }
-                            }
-                        })
-                    }
-                }
-            })
-        })
-    })
-
-    function outputBorrow() {
-        $(document).on("click", ".borrow", function () {
-            currentRow = $(this).parents("tr");
-            bookId = currentRow.find(".book-id").text();
-            $.ajax({
-                url: "/book_list/borrowed_check/" + bookId,
-                method: "get",
-                success: function (response) {
-                    if (response) {
-                        $("#hasBorrowed").modal("show");
-                    } else {
-                        $("#confirm-modal").modal("show");
-                    }
-                }
-            })
-
-        });
-    }
-
-    /* Handle confirm */
-    $(document).on("click", ".confirm", function () {
-
-        $.ajax({
-            url: "/book_list/get_copies/" + bookId,
-            method: "get",
-            success: function (response) {
-                let availableCopies = response - 1;
-                $.ajax({
-                    url: "/book_list/borrow",
-                    method: "get",
-                    data: {
-                        copies: availableCopies,
-                        bookId: bookId
-                    },
-                })
-                if (availableCopies === 0) {
-                    currentRow.find(".borrow").hide();
-                    currentRow.find(".success").hide();
-                    currentRow.find(".cart").hide();
-                }
-            }
-        })
-        $("#confirm-modal").modal("hide");
-        $("#successModalBorrow").modal("show");
-    })
-    /*
-    Add to cart
-     */
-    $(document).on("click", ".cart", function () {
-        currentRow = $(this).parents("tr");
-        bookId = currentRow.find(".book-id").text();
-        toastr.options = {
-            "closeButton": true,
-            "newestOnTop": true,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": true,
-            "timeOut": "5000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
-        $.ajax({
-            url: "/check-book-in-cart",
-            method: "get",
-            data: {bookId: bookId},
-            success: function (response) {
-                if (response === "has borrowed") {
-                    toastr.warning("ID " + bookId + ": You had already borrowed this book!");
-                }
-                if (response === "in cart") {
-                    toastr.error("ID " + bookId + ": You had already add it to cart!");
-                }
-                if (response === "not in cart") {
-                    toastr.success("ID " + bookId + ": Successful add to cart");
-                }
-            }
-        })
-        $.ajax({
-            url: "/add_to_cart",
-            method: "get",
-            data: {bookId},
-            success: "OK"
-        })
-    })
-    /*
-    show list cart
-     */
-    $(document).on("click", ".myCart", function () {
-        $("#cart").modal("show");
-        $.ajax({
-            url: "/cart_list",
-            method: "get",
-            success: function (response) {
-                if (response.length === 0) {
-                    $(".cart-confirm").hide();
-                } else {
-                    $(".cart-confirm").show();
-                }
-                $(".cart-table tbody").empty();
-                response.forEach(item => {
-                    let row = `
-                        <tr data-item-id = ${item.id}>
-                            <td>${item.id}</td>
-                            <td>${item.title}</td>
-                            <td>${item.categories}</td>
-                            <td>${item.authors}</td>
-                            <td>
-                            <button type="button" class="cart-remove-book">
-                            <span>&times;</span>
-                            </button>
-                            </td>
-                        </tr>
-`;
-                    $(".cart-table tbody").append(row);
-                });
-                $(document).on("click", ".cart-remove-book", function () {
-                    $(this).closest("tr").remove();
-                    var itemId = $(this).closest("tr").data("item-id");
-                    $.ajax({
-                        url: "/remove-book-in-cart",
-                        method: "get",
-                        data: {bookId: itemId},
-                        success: function (response) {
-                            if (response.length === 0) {
-                                $(".cart-confirm").hide();
-                            }
-                        }
-                    })
-                })
-                $(document).on("click", ".cart-confirm", function () {
-                    $("#cart").modal("hide");
-                    $("#successModalBorrow").modal("show");
-                    $(".cart-table tbody").empty();
-                    $.ajax({
-                        url: "/cart-borrow",
-                        method: "post",
-                        contentType: "application/json; charset=utf-8",
-                        data: JSON.stringify(response)
-                    })
-                    response = {};
-                })
-            }
-        })
-    })
-
-
-    /*
-    ADMIN CONTROLLER
-     */
-
-    //handle show hide
-    $(document).ready(function () {
-        $(".row-list").each(function () {
-            let bookId = $(this).find(".book-id").text();
-            let row = $(this);
-            $.ajax({
-                url: "/check-hide-book",
-                method: "get",
-                data: {bookId : bookId},
-                success: function (response) {
-                    if(response === true) {
-                        row.find(".hide-book").text("Show");
-                    }
-                    else{
-                        row.find(".hide-book").text("Hide");
-                    }
-                }
-            })
-        })
-    })
-    $(document).on("click", ".hide-book", function () {
-        let bookId = $(this).closest("tr").find(".book-id").text();
-        console.log($(this).text());
-        if ($(this).text() === "Hide") {
-            $(this).text("Show");
-            $.ajax({
-                url: "/set-hide-book",
-                method: "get",
-                data: {
-                    status: "hide",
-                    bookId: bookId
-                }
-            })
-        } else {
-            $(this).text("Hide");
-            $.ajax({
-                url: "/set-hide-book",
-                method: "get",
-                data: {
-                    status: "show",
-                    bookId: bookId
-                }
-            })
-        }
-    })
-    $(document).on("click", ".remove-book", function () {
-        let editButton = $(this).parents("tr");
-        let bookId = editButton.find(".book-id").text();
-        $("#remove-modal").modal("show");
-        $(document).on("click", ".remove-confirm", function () {
-            $("#remove-modal").modal("hide");
-            editButton.hide();
-            $("#successModalRemoving").modal("show");
-            $.ajax({
-                url: "/remove-book",
-                method: "get",
-                data: {bookId: bookId}
-            })
-        })
-    })
-    $(document).on("click", ".edit-book", function () {
-        $("#editBookModal").modal("show");
-    })
-
 </script>
 </body>
 </html>

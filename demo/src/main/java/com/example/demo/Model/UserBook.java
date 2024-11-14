@@ -32,7 +32,6 @@ public class UserBook {
         this.book = book;
     };
 
-    private int quantity;
 
     @CreationTimestamp
     @Column(name = "borrow_date")
@@ -45,8 +44,6 @@ public class UserBook {
     @UpdateTimestamp
     @Column(name = "due_date")
     private Date dueDate;
-
-    private String status;
 
 
 }

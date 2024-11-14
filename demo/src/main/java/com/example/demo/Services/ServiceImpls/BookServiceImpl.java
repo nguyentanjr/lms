@@ -87,13 +87,13 @@ public class BookServiceImpl implements BookService {
         Book book = new Book();
         String title = item.path("volumeInfo").path("title").asText();
         book.setTitle(title);
-        List<String> authors = new ArrayList<>();
+        ArrayList<String> authors = new ArrayList<>();
         JsonNode authorsItem = item.path("volumeInfo").path("authors");
         for(JsonNode author : authorsItem) {
             authors.add(author.asText());
         }
         book.setAuthors(authors);
-        List<String> categories = new ArrayList<>();
+        ArrayList<String> categories = new ArrayList<>();
         JsonNode categoriesItem = item.path("volumeInfo").path("categories");
         for(JsonNode category : categoriesItem) {
             categories.add(category.asText());
