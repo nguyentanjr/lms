@@ -3,6 +3,8 @@ package com.example.demo.Controller;
 import com.example.demo.DTO.UpdateInformationDTO;
 import com.example.demo.Model.Book;
 import com.example.demo.Model.User;
+import com.example.demo.Model.UserBook;
+import com.example.demo.Services.Service.UserBookService;
 import com.example.demo.Services.Service.UserService;
 
 import org.modelmapper.ModelMapper;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -29,6 +32,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private UserBookService userBookService;
 
     @GetMapping("/register")
     public String register(Authentication authentication) {
@@ -46,6 +51,7 @@ public class UserController {
             return "register";
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole("USER");
         userService.saveUser(user);
         return "redirect:/login";
     }
@@ -64,30 +70,43 @@ public class UserController {
         String username = ((UserDetails) principal).getUsername();
         User user = userService.findUserByUserName(username).get();
         if (user.getEmail() == null) {
-            return "update_information";
+            return "redirect:/update_information";
         } else {
-            return "user_dashboard";
+            return "index";
         }
     }
 
-    @PostMapping("/updateInfo")
-    public ResponseEntity<String> updateInformation(@ModelAttribute UpdateInformationDTO updateInformationDTO) {
+    @GetMapping("/update_information")
+    public String updateInformation() {
+        return "update_information";
+    }
+
+    @PostMapping("/update_information")
+    public ResponseEntity<String> updateInformationSuccess(@ModelAttribute UpdateInformationDTO updateInformationDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication);
         Object principal = authentication.getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         User user = userService.findUserByUserName(username).get();
+
         user.setEmail(updateInformationDTO.getEmail());
         user.setFullName(updateInformationDTO.getFullName());
         user.setPhoneNumber(updateInformationDTO.getPhoneNumber());
         user.setGender(updateInformationDTO.getGender());
         userService.saveUser(user);
-        return ResponseEntity.ok("Update Information Successfully!");
+        return ResponseEntity.ok("Success");
     }
+
     @GetMapping("/isUser")
     public ResponseEntity<Boolean> isUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return ResponseEntity.ok(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")));
     }
+
+    @GetMapping("/profile")
+    public String profile() {
+        return "profile";
+    }
+
+
 }

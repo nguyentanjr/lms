@@ -10,10 +10,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
@@ -21,7 +23,12 @@ import org.springframework.web.client.RestTemplate;
 public class SecurityConfiguration {
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private FilterUserUpdated filterUserUpdated;
+    @Autowired
+    private SessionRegistry sessionRegistry;
+    @Autowired
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
@@ -29,11 +36,17 @@ public class SecurityConfiguration {
                         .requestMatchers("/","/register/**","/login/**","/webjars/**").permitAll()
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .expiredUrl("/login")
+                        .sessionRegistry(sessionRegistry))
+                .addFilterAfter(filterUserUpdated, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
                         .loginPage("/login").permitAll()
-                        .successHandler(new AuthenticationSuccessHandler()))
+                        .successHandler(authenticationSuccessHandler))
                 .build();
     }
 

@@ -44,7 +44,7 @@ public class CartController {
     public ResponseEntity<String> addToCart(@ModelAttribute("cart") Cart cart, long bookId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUserName(authentication.getName()).get();
-        if(userBookService.hasUserBorrowedBook(user.getId(),bookId)) {
+        if(bookService.checkUserHasBorrowedBook(bookId)) {
             return ResponseEntity.ok("You had already borrow");
         }
         return ResponseEntity.ok(cartService.addBookToCart(bookId,cart));
@@ -62,7 +62,7 @@ public class CartController {
     public ResponseEntity<String> checkInCart(long bookId,@ModelAttribute("cart") Cart cart) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUserName(authentication.getName()).get();
-        if(cartService.checkBookInCart(bookId,cart)) {
+        if(cartService.checkBookHadAlreadyInCart(bookId,cart)) {
             return ResponseEntity.ok("in cart");
         }
         if(userBookService.hasUserBorrowedBook(user.getId(),bookId)) {

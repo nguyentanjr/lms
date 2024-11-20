@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 public interface CartService {
     String addBookToCart(long bookId, @ModelAttribute("cart")Cart cart);
-    boolean checkBookInCart(long bookId, @ModelAttribute("cart")Cart cart);
+    boolean checkBookHadAlreadyInCart(long bookId, @ModelAttribute("cart")Cart cart);
     void removeBookInCart(long bookId,@ModelAttribute("cart")Cart cart);
+
 }

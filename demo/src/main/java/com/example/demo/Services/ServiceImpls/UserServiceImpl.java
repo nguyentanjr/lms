@@ -4,8 +4,13 @@ import com.example.demo.DTO.UserDTO;
 import com.example.demo.Model.User;
 import com.example.demo.Respository.UserRepository;
 import com.example.demo.Services.Service.UserService;
+import org.apache.catalina.Session;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +26,8 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     private UserRepository userRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private SessionRegistry sessionRegistry;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUserName(username);
@@ -34,6 +41,16 @@ public class UserServiceImpl implements UserDetailsService,UserService{
         } else throw new UsernameNotFoundException("NOT FOUND" + username);
     }
 
+    public String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        return ((UserDetails)principal).getUsername();
+    }
+
+    public long getUserId(String username) {
+        User user = findUserByUserName(username).get();
+        return user.getId();
+    }
     public Optional<User> findUserByUserName(String username) {
         return userRepository.findByUserName(username);
     }
@@ -66,4 +83,27 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     public void removeUser(long userId) {
         userRepository.deleteById(userId);
     }
+
+
+
+    public boolean validateUserDeletion(long userId) {
+        List<Object> principals = sessionRegistry.getAllPrincipals();
+        System.out.println("principal: " + principals.size());
+        for(Object principal : principals) {
+            if(principal instanceof UserDetails) {
+                String username = ((UserDetails) principal).getUsername();
+                User user = findUserByUserName(username).get();
+                System.out.println(user.getId() + " " + userId);
+                if(user.getId() == userId) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    public boolean checkIfUserCurrentlyLogin() {
+        return true;
+    }
+
+
 }

@@ -1,14 +1,185 @@
-!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Book List</title>
+    <link href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+    <!-- jQuery và Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #E9F5DB; /* Màu nền tổng thể */
+            margin: 0;
+            padding: 0;
+        }
 
-    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+        .header {
+            background-color: #718355; /* Header màu đậm */
+            color: white;
+            padding: 10px 20px;
+        }
 
-    <div class="container-fluid text-center">
-        <h1><a th:href="@{/login}">Login</a></h1><br>
-        <h1><a th:href="@{/register}">Register</a></h1><br>
-    </div>
+        .stats {
+            text-align: center;
+            background-color: #CFE1B9; /* Màu nhấn nhẹ */
+            padding: 10px 0;
+            font-size: 14px;
+            color: #718355; /* Chữ đậm hơn */
+        }
+
+        .hero {
+            background-color: #87986A; /* Màu xanh trung tính */
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            margin-bottom: 20px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            padding: 40px 20px;
+            background-color: #F4F4F4; /* Màu nền nhẹ hơn */
+        }
+
+        .feature-card {
+            background-color: #B5C99A; /* Card màu trung tính */
+            border: 1px solid #97A97C;
+            padding: 20px;
+            text-align: center;
+            width: 30%;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card img {
+            width: 50px;
+            margin-bottom: 20px;
+        }
+
+        .navbar {
+            background-color: #718355; /* Navbar đậm */
+            padding: 10px 20px;
+        }
+
+        .navbar-brand {
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .navbar-nav .nav-link {
+            color: #FFFFFF;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #CFE1B9; /* Nhấn khi hover */
+        }
+
+        .navbar-icons {
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+
+        .navbar-icons i {
+            margin-right: 10px;
+        }
+
+        .navbar-icons a {
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+        .navbar-icons a:hover {
+            color: #CFE1B9; /* Màu nhấn */
+        }
+
+        .hero button {
+            background-color: #718355; /* Button màu đậm */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .hero button:hover {
+            background-color: #87986A; /* Hover màu sáng hơn */
+            cursor: pointer;
+        }
+    </style>
 </head>
+<body>
 
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Library Manage System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/book_list">Find Book</a></li>
+                <li class="nav-item"><a class="nav-link" href="/book_list?showCart=true">View My Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">My Borrowed Book</a></li>
+                <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Notification</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+            </ul>
+            <div class="navbar-icons">
+                <a href="/login" th:if="${#authentication == null}">Login |</a>
+                <a href="/register" th:if="${#authentication == null}">Register</a>
+                <a href="/logout" th:if="${#authentication != null}">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Stats -->
+<div class="stats">
+    <p>We have 2,689,719 registered online learners &nbsp; | &nbsp; 622 new learners so far today</p>
+</div>
+
+<!-- Hero Section -->
+<div class="hero">
+    <h1>Library Manage System</h1>
+    <p>Discover a smarter way to manage your library Library Management System (LMS).
+        Whether you're a student, educator, or librarian, our system streamlines how you access, borrow the books.
+    </p>
+    <button class="btn">GET IN TOUCH</button>
+</div>
+
+<!-- Features Section -->
+<div class="features container">
+    <div class="feature-card">
+        <img src="https://via.placeholder.com/50" alt="Fast-track training">
+        <h3>First</h3>
+        <p>Navigate the Vast Library: Effortless Management for Knowledge Seekers</p>
+    </div>
+    <div class="feature-card">
+        <img src="https://via.placeholder.com/50" alt="Reduce administration">
+        <h3>Second</h3>
+        <p>Cultivating Lifelong Learning: Empowering Your Library Experience</p>
+    </div>
+    <div class="feature-card">
+        <img src="https://via.placeholder.com/50" alt="Simplify reporting">
+        <h3>Third</h3>
+        <p>Streamline Library Operations and Enhance User Experience with Our LMS.</p>
+    </div>
+</div>
+
+</body>
+</html>

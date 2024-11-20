@@ -1,5 +1,6 @@
 package com.example.demo.Controller;
 
+import com.example.demo.DTO.AddBookDTO;
 import com.example.demo.DTO.BookDTO;
 import com.example.demo.Model.Book;
 import com.example.demo.Model.Cart;
@@ -38,44 +39,28 @@ public class BookController {
     @Autowired
     private ModelMapper modelMapper;
 
-    @ModelAttribute("bookList")
-    public List<Book> bookList() {
-        return new ArrayList<>();
-    }
-
     @GetMapping("/book_list")
     public String getAllBooks(Model model, @ModelAttribute("cart") Cart cart) {
         model.addAttribute("books", bookService.getAllBooks());
         return "book_list";
     }
 
+
     @GetMapping("/book_list/get_copies/{bookId}")
     public ResponseEntity<Integer> getBookCopies(@PathVariable long bookId) {
-        Book book = bookService.findBookByBookId(bookId);
-        int copiesAvailable = book.getCopiesAvailable();
+        int copiesAvailable = bookService.getBookCopies(bookId);
         return ResponseEntity.ok(copiesAvailable);
     }
 
     @GetMapping("/book_list/borrowed_check/{bookId}")
     public ResponseEntity<Boolean> checkUserHasBorrowedBook(@PathVariable long bookId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUserName(authentication.getName()).get();
-        return ResponseEntity.ok(userBookService.hasUserBorrowedBook(user.getId(), bookId));
+        return ResponseEntity.ok(bookService.checkUserHasBorrowedBook(bookId));
     }
 
-    @GetMapping("/book_list/borrow")
-    public ResponseEntity<String> borrowBook(long bookId, int copies, @ModelAttribute List<BookDTO> cartList) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUserName(authentication.getName()).get();
-        Book book = bookService.findBookByBookId(bookId);
-        if (userBookService.hasUserBorrowedBook(user.getId(), book.getId())) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("You had already borrow this book!");
-        }
-        if (book.getCopiesAvailable() > 0) {
-            book.setCopiesAvailable(copies);
-            userBookService.save(new UserBook(user, book));
-        }
-        return ResponseEntity.ok("Successfull");
+    @GetMapping("/book_list/set_copies")
+    public ResponseEntity<String> setCopies(long bookId, int copies) {
+        bookService.saveBookBorrowedByUser(bookId,copies);
+        return ResponseEntity.ok("Successfully");
     }
 
 
@@ -95,8 +80,7 @@ public class BookController {
     @PostMapping("/cart-borrow")
     public ResponseEntity<String> borrowedFromCart(@RequestBody List<BookDTO> bookDTOList,
                                                    @ModelAttribute("cart") Cart cart, HttpSession session) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUserName(authentication.getName()).get();
+        User user = userService.findUserByUserName(userService.getUsername()).get();
         List<UserBook> userBooks = new ArrayList<>();
         for (BookDTO bookDTO : bookDTOList) {
             Book book = modelMapper.map(bookDTO, Book.class);
@@ -110,8 +94,9 @@ public class BookController {
 
     @GetMapping("/remove-book")
     public ResponseEntity<String> removeBook(long bookId) {
-        userBookService.unassignBookFromUsers(bookId);
+        userBookService.deleteRelationByBookId(bookId);
         bookService.removeBookById(bookId);
+        bookService.saveBooksToJson();
         return ResponseEntity.ok("Book removed successfully");
     }
 
@@ -137,19 +122,31 @@ public class BookController {
     @ResponseBody
     public ResponseEntity<String> editBook(@RequestBody Book book) {
         Book myBook = bookService.findBookByBookId(book.getId());
-        if(!book.getTitle().isEmpty()) {
+        if (!book.getTitle().isEmpty()) {
             myBook.setTitle(book.getTitle());
         }
-        if(book.getAuthors() != null) {
+        if (book.getAuthors() != null) {
             myBook.setAuthors(book.getAuthors());
         }
-        if(book.getCategories() != null) {
+        if (book.getCategories() != null) {
             myBook.setCategories(book.getCategories());
         }
-        if(!book.getPublishedDate().isEmpty()) {
+        if (!book.getPublishedDate().isEmpty()) {
             myBook.setPublishedDate(book.getPublishedDate());
         }
         bookService.saveBook(myBook);
         return ResponseEntity.ok("Successful");
+    }
+
+    @GetMapping("/suggest-book")
+    public ResponseEntity<List<String>> displaySuggestBooks(String query) {
+        return ResponseEntity.ok(bookService.getBookSuggestion(query));
+    }
+
+    @PostMapping("/add-book")
+    @ResponseBody
+    public ResponseEntity<String> addABook(@RequestBody AddBookDTO addBookDTO) {
+        bookService.addBook(addBookDTO);
+        return ResponseEntity.ok("Add book sucessfully!");
     }
 }

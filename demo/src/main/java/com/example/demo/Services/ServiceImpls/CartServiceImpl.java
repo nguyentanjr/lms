@@ -19,16 +19,16 @@ public class CartServiceImpl implements CartService {
     private ModelMapper modelMapper;
 
     public String addBookToCart(long bookId, @ModelAttribute("cart") Cart cart) {
-        Book book = bookService.findBookByBookId(bookId);
-        BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
-        if (cart.getBookList().contains(bookDTO)) {
+        if (checkBookHadAlreadyInCart(bookId,cart)) {
             return "You have already added this book to the cart!";
         } else {
+            Book book = bookService.findBookByBookId(bookId);
+            BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
             cart.addBookToCart(bookDTO);
             return "Successfully added book to cart!";
         }
     }
-    public boolean checkBookInCart(long bookId,@ModelAttribute("cart") Cart cart) {
+    public boolean checkBookHadAlreadyInCart(long bookId,@ModelAttribute("cart") Cart cart) {
         Book book = bookService.findBookByBookId(bookId);
         BookDTO bookDTO = modelMapper.map(book, BookDTO.class);
         return cart.getBookList().contains(bookDTO);

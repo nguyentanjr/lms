@@ -59,7 +59,7 @@ $(document).on("click", ".confirm", function () {
         success: function (response) {
             let availableCopies = response - 1;
             $.ajax({
-                url: "/book_list/borrow",
+                url: "/book_list/set_copies",
                 method: "get",
                 data: {
                     copies: availableCopies,
@@ -67,9 +67,14 @@ $(document).on("click", ".confirm", function () {
                 },
             })
             if (availableCopies === 0) {
-                currentRow.find(".borrow").hide();
                 currentRow.find(".success").hide();
+                currentRow.find(".borrow").hide();
                 currentRow.find(".cart").hide();
+                let status = `
+                <span class="badge badge-danger danger">Checked Out</span> 
+`
+                currentRow.find(".status").html(status);
+                console.log(status);
             }
         }
     })
@@ -112,32 +117,34 @@ $(document).on("click", ".cart", function () {
     $.ajax({
         url: "/add_to_cart",
         method: "get",
-        data: {bookId},
+        data: {bookId : bookId},
         success: "OK"
     })
 })
 /*
 show list cart
  */
-$(document).on("click", ".myCart", function () {
-    $("#cart").modal("show");
-    $.ajax({
-        url: "/cart_list",
-        method: "get",
-        success: function (response) {
-            if (response.length === 0) {
-                $(".cart-confirm").hide();
-            } else {
-                $(".cart-confirm").show();
-            }
-            $(".cart-table tbody").empty();
-            response.forEach(item => {
-                let row = `
+$(document).ready(function () {
+    let url = new URLSearchParams(window.location.search);
+    $(document).on("click", ".myCart", function () {
+        $("#cart").modal("show");
+        $.ajax({
+            url: "/cart_list",
+            method: "get",
+            success: function (response) {
+                if (response.length === 0) {
+                    $(".cart-confirm").hide();
+                } else {
+                    $(".cart-confirm").show();
+                }
+                $(".cart-table tbody").empty();
+                response.forEach(item => {
+                    let row = `
                         <tr data-item-id = ${item.id}>
                             <td>${item.id}</td>
                             <td>${item.title}</td>
-                            <td>${item.categories}</td>
                             <td>${item.authors}</td>
+                            <td>${item.categories}</td>
                             <td>
                             <button type="button" class="cart-remove-book">
                             <span>&times;</span>
@@ -145,38 +152,41 @@ $(document).on("click", ".myCart", function () {
                             </td>
                         </tr>
 `;
-                $(".cart-table tbody").append(row);
-            });
-            $(document).on("click", ".cart-remove-book", function () {
-                $(this).closest("tr").remove();
-                var itemId = $(this).closest("tr").data("item-id");
-                $.ajax({
-                    url: "/remove-book-in-cart",
-                    method: "get",
-                    data: {bookId: itemId},
-                    success: function (response) {
-                        if (response.length === 0) {
-                            $(".cart-confirm").hide();
+                    $(".cart-table tbody").append(row);
+                });
+                $(document).on("click", ".cart-remove-book", function () {
+                    $(this).closest("tr").remove();
+                    var itemId = $(this).closest("tr").data("item-id");
+                    $.ajax({
+                        url: "/remove-book-in-cart",
+                        method: "get",
+                        data: {bookId: itemId},
+                        success: function (response) {
+                            if (response.length === 0) {
+                                $(".cart-confirm").hide();
+                            }
                         }
-                    }
+                    })
                 })
-            })
-            $(document).on("click", ".cart-confirm", function () {
-                $("#cart").modal("hide");
-                $("#successModalBorrow").modal("show");
-                $(".cart-table tbody").empty();
-                $.ajax({
-                    url: "/cart-borrow",
-                    method: "post",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(response)
+                $(document).on("click", ".cart-confirm", function () {
+                    $("#cart").modal("hide");
+                    $("#successModalBorrow").modal("show");
+                    $(".cart-table tbody").empty();
+                    $.ajax({
+                        url: "/cart-borrow",
+                        method: "post",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(response)
+                    })
+                    response = {};
                 })
-                response = {};
-            })
-        }
+            }
+        })
     })
+    if(url.get("showCart") === 'true') {
+        $(".myCart").click();
+    }
 })
-
 
 /*
 ADMIN CONTROLLER
@@ -271,18 +281,18 @@ $(document).on("click", ".edit-book", function () {
         let categoriesArray;
 
         //check if present
-        if(title.trim() !== "") {
+        if (title.trim() !== "") {
             row.find(".book-title").text(title);
         }
-        if(authors.trim() !== "") {
+        if (authors.trim() !== "") {
             authorsArray = authors.split(',').map(item => item.trim())
             row.find(".book-authors").html(authorsArray.join("<br>"));
         }
-        if(categories.trim() !== "") {
+        if (categories.trim() !== "") {
             categoriesArray = categories.split(',').map(item => item.trim());
             row.find(".book-categories").html(categoriesArray.join("<br>"));
         }
-        if(publishedDate.trim() !== "") {
+        if (publishedDate.trim() !== "") {
             row.find(".book-publishedDate").text(publishedDate);
         }
         $.ajax({
@@ -291,11 +301,47 @@ $(document).on("click", ".edit-book", function () {
             contentType: "application/json",
             data: JSON.stringify({
                 id: bookId,
-                title : title,
+                title: title,
                 authors: authorsArray,
                 categories: categoriesArray,
-                publishedDate : publishedDate
+                publishedDate: publishedDate
             })
         })
     })
 })
+
+$(document).ready(function () {
+    $(document).on("input", "#searchInput", function () {
+        let query = $(this).val();
+        if (query.length > 0) {
+            $.ajax({
+                url: "/suggest-book",
+                method: "get",
+                data: {query: query},
+                success: function (response) {
+                    $("#searchSuggestion").empty();
+                    for (let i = 0; i < Math.min(response.length, 5); i++) {
+                        let randomNumber = Math.floor(Math.random() * (response.length - 1));
+                        $("#searchSuggestion").append(` <div class="suggestion-item">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-book me-2"></i>
+                                    <div>
+                                        <div class="fw-bold title">${response[i]}</div>
+                                    </div>
+                                </div>
+                            </div>`);
+                    }
+                    $("#searchSuggestion").show();
+                }
+            })
+        } else {
+            $("#searchSuggestion").hide();
+        }
+        $(document).on("click", ".suggestion-item", function () {
+            let title = $(this).find(".title").text();
+            title = encodeURIComponent(title);
+            window.location.href = "/book_list/find?title=" + title;
+        })
+    })
+})
+

@@ -11,8 +11,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
-    <link href="/css/user_list.css" rel="stylesheet" />
-    <script th:src="@{/js/user_list.js}"></script>
+    <link rel="stylesheet" href="/static/css/user_list.css">
+    <script th:src="@{/static/js/user_list.js}"></script>
 </head>
 <body>
 <div class="container text-center">
@@ -25,7 +25,7 @@
             <button type="submit">Search</button>
         </form>
     </div>
-    <!-- Book Data -->
+
     <table class="table table-striped">
         <thead>
         <tr>
@@ -42,20 +42,19 @@
         </thead>
 
         <tbody id="userListTable">
-        <tr th:each="user : ${users}" class="row-list" th:data-user-id = "${user.id}">
+        <tr th:each="user : ${users}" class="row-list" th:data-user-id="${user.id}">
             <td class="user-id" th:text="${user.id}"></td>
-            <td th:text="${user.username}"></td>
-            <td th:text="${user.fullName}"></td>
-            <td th:text="${user.email}"></td>
-            <td th:text="${user.phoneNumber}"></td>
-            <td th:text="${user.gender}"></td>
-            <td th:text="${user.registrationDate}"></td>
-            <td th:text="${user.role}"></td>
+            <td class="user-username" th:text="${user.username}"></td>
+            <td class="user-fullName" th:text="${user.fullName}"></td>
+            <td class="user-email" th:text="${user.email}"></td>
+            <td class="user-phoneNumber" th:text="${user.phoneNumber}"></td>
+            <td class="user-gender" th:text="${user.gender}"></td>
+            <td class="user-registrationDate" th:text="${user.registrationDate}"></td>
+            <td class="user-role" th:text="${user.role}"></td>
             <td>
                 <div style="display: flex; gap: 3px;">
                     <button class="btn btn-danger remove-user" sec:authorize="hasRole('ADMIN')">Remove</button>
-                    <button class="btn btn-dark hide-book" th:data-hide-id="${user.id}"
-                            sec:authorize="hasRole('ADMIN')"></button>
+                    <button class="btn btn-dark edit-user">Edit</button>
                 </div>
             </td>
         </tr>
@@ -113,7 +112,6 @@
 </div>
 
 
-
 <!-- Show Success Notification for Editing a Book -->
 <div class="modal fade" id="successModalEditing">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -141,6 +139,136 @@
 </div>
 
 <script>
+    $(document).on("click", ".remove-user", function () {
+        let removeButton = $(this).parents("tr");
+        let userId = removeButton.find(".user-id").text()
+        console.log(userId);
+        $("#remove-modal").modal("show");
+        $(document).on("click", ".remove-confirm", function () {
+            removeButton.hide();
+            $("#remove-modal").modal("hide");
+            $("#successModalRemoving").modal("show");
+            console.log(userId);
+            $.ajax({
+                url: "/remove-user",
+                method: "get",
+                data: {userId: userId}
+            })
+        })
+    })
+
+    $(document).on("click", ".edit-user", function () {
+        let rowList = $(this).closest("tr");
+        let userId = rowList.find(".user-id").text();
+        let username = rowList.find(".user-username").text();
+        let fullName = rowList.find(".user-fullName").text();
+        let email = rowList.find(".user-email").text();
+        let phoneNumber = rowList.find(".user-phoneNumber").text();
+        let gender = rowList.find(".user-gender").text();
+        let registrationDate = rowList.find(".user-registrationDate").text();
+        let role = rowList.find(".user-role").text();
+        let editRow = rowList.next(".edit-row");
+        if (editRow.length > 0) {
+            $(".edit-row").remove();
+        } else {
+            let row = `
+        <tr class="edit-row">
+            <td>
+                <input type="text" class="form-control userId text-center" value="${userId}" readonly>
+            </td>
+            <td>
+                <input type="text" class="form-control username text-center" value="${username}" readonly>
+            </td>
+            <td>
+                <input type="text" class="form-control fullName text-center" value="${fullName}">
+            </td>
+            <td>
+                <input type="email" class="form-control email text-center" value="${email}">
+            </td>
+            <td>
+                <input type="tel" class="form-control phoneNumber text-center" pattern="^[0-9]{10}$" value="${phoneNumber}">
+            </td>
+            <td>
+                <select class="form-control gender text-center">
+                    <option value="Male" ${gender === 'Male' ? 'selected' : ''}>Male</option>
+                    <option value="Female" ${gender === 'Female' ? 'selected' : ''}>Female</option>
+                    <option value="Other" ${gender === 'Other' ? 'selected' : ''}>Other</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" class="form-control registrationDate text-center" value="${registrationDate}" readonly>
+            </td>
+            <td>
+                <input type="text" class="form-control role text-center" value="${role}" readonly>
+            </td>
+           <td>
+                <button type="submit" class="btn btn-primary update mr-2">Update</button>
+            </div>
+    </td>
+        </tr>
+    `;
+            rowList.after(row);
+            $(document).on("click", ".close", function () {
+                $(this).closest("tr").remove();
+            })
+        }
+    });
+
+
+    $(document).on("click", ".update", function (e) {
+        e.preventDefault();
+        const rowList = $(this).closest("tr");
+        const email = rowList.find(".email").val();
+        const phoneNumber = rowList.find(".phoneNumber").val();
+        const fullName = rowList.find(".fullName").val();
+
+        toastr.options = {
+            "closeButton": true,
+            "newestOnTop": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "timeOut": "5000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+
+        if (!fullName) {
+            toastr.error("Full Name is required");
+            return false;
+        }
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email.match(emailPattern)) {
+            toastr.error("Please enter a valid email address");
+            return false;
+        }
+        const phonePattern = /^[0-9]{10}$/;
+        if (!phoneNumber.match(phonePattern)) {
+            toastr.error("Please enter a valid phone number");
+            return false;
+        }
+        let row = $(this).closest("tr");
+        console.log(row.find(".userId").val());
+        let data = {
+            userId: row.find(".userId").val(),
+            username: row.find(".username").val(),
+            fullName: row.find(".fullName").val(),
+            email: row.find(".email").val(),
+            phoneNumber: row.find(".phoneNumber").val(),
+            gender: row.find(".gender").val(),
+            registrationDate: row.find(".registrationDate").val(),
+            role: row.find(".role").val(),
+        };
+        $.ajax({
+            url: "/update-user",
+            method: "post",
+            data: JSON.stringify(data),
+            contentType: "application/json"
+        })
+
+        toastr.success("Update successfully!")
+    })
 </script>
 </body>
 </html>
