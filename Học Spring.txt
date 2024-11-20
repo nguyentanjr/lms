@@ -1,0 +1,67 @@
+Ánh xạ: thao tác với java mà ko cần query trong sql
+@entity: đánh dấu 1 lớp tương ứng với bảng trong database -> ORM sẽ biết lớp này được ánh xạ tới 1 bảng database
+@id: khóa chính
+ORM sẽ tự động tạo query để làm truy vấn hoặc export data vào bảng dựa trên hành động dc làm trong đối tượng 
+
+IoC làm đối tượng define their dependency without creating them -> đối tượng giao phó việc này cho IoC container
+IoC nhằm mục đích đơn giản hóa quá trình tạo đối tượng và liên kết giữa chúng, bằng cách tuân theo nguyên tắc: Không tạo đối tượng, chỉ mô tả cách chúng sẽ được tạo ra.
+
+Beans là các đối tượng được tạo ra bởi IOC container, nó có thể service,controller,resposiory
+Khi 1 obj được tạo bởi ioc container thì container đó handle their life cycle and dependency
+
+Spring container: manage bean, thực hiện dependency injection
+
+@Repository: Được sử dụng cho các lớp thao tác với dữ liệu (DAO). Nó cũng cung cấp tính năng xử lý lỗi tự động khi làm việc với các cơ sở dữ liệu.
+@Service: Được sử dụng cho các lớp cung cấp dịch vụ (service). Nó chỉ rõ rằng lớp này chứa logic nghiệp vụ.
+@Controller: Được sử dụng cho các lớp điều khiển (controller) trong các ứng dụng web theo mô hình MVC.
+@Component được sử dụng để đánh dấu một lớp là Spring bean, và đối tượng của lớp đó sẽ được quản lý bởi Spring IoC container.
+
+Đây là dòng đầu tiên của HTTP Request, với ba loại chính là method, path ( hay URL) và HTTP version. Cụ thể:
+Method: gồm nhiều loại nhưng phổ biến nhất là GET và POST. 
+Trong đó, phương thức GET có tác dụng dùng để yêu cầu các tài nguyên cung cấp trong URL.Get là phương thức được Client gửi dữ liệu lên Server thông qua đường dẫn URL nằm trên thanh địa chỉ của Browser.
+Path (URL): có tác dụng định danh các nguồn tài nguyên được yêu cầu bởi khách hàng, người dùng và bắt buộc phải có dấu “/".
+
+Request body dùng trong POST,PUT,PATCH có chức năng giúp các client gửi yêu cầu bổ sung tới máy chủ server. Có thể sử dụng tạo mới, cập nhật dữ liệu mà header Parameters không truyền đi được.
+
+POST dùng để import data lên database kiểu như register
+HTTP request là thông tin được gửi từ client lên server, để yêu cầu server tìm hoặc xử lý một số thông tin, dữ liệu mà client muốn.
+
+
+Bean là annotation để khai báo một object sẽ được tạo và quản lý bởi application context
+Autowire là để inject bean được quản lý bởi applictaion context cho những class muốn sử dụng bean được tạo
+ngoài việc sử dụng autowire bạn có thể sử dụng contructor inject hoặc setter inject nhé
+để hiểu hơn thì có thế đọc về IOC nhé
+
+Trong Spring Framework, Spring IoC container quản lý các bean (các đối tượng của các lớp). Khi bạn định nghĩa một lớp như StudentService và đánh dấu nó với annotation như @Service, Spring sẽ tạo một instance (đối tượng) của lớp đó và quản lý nó.
+
+Entity là một đối tượng được ánh xạ với một bảng trong cơ sở dữ liệu, thường có một ID duy nhất để định danh.	
+
+instance là đối tượng
+
+Entity để mapping data từ database ra
+Model để chuyển Entity thành dạng thích hợp để trả về
+
+Việc convert giữa các dạng data, ví dụ DTO thành Entity, DTO thành domain model, domain model thành entity hoặc ngược lại, được gọi là model mapping.
+
+HTTP Request (Yêu cầu HTTP): Khi một client yêu cầu dữ liệu hoặc tài nguyên từ máy chủ (ví dụ: khi bạn truy cập một trang web), nó sẽ gửi một yêu cầu HTTP bao gồm:
+
+Method: Phương thức chỉ định loại yêu cầu (ví dụ: GET, POST, PUT, DELETE).
+URL: Địa chỉ tài nguyên bạn muốn truy cập.
+Headers: Thông tin bổ sung như loại trình duyệt, định dạng mong muốn của dữ liệu trả về.
+Body (tùy chọn): Dữ liệu được gửi kèm theo yêu cầu (thường là khi sử dụng phương thức POST).
+HTTP Response (Phản hồi HTTP): Sau khi máy chủ xử lý yêu cầu, nó sẽ trả về phản hồi bao gồm:
+
+Status Code: Mã trạng thái HTTP để xác định kết quả của yêu cầu (ví dụ: 200 OK, 404 Not Found, 500 Internal Server Error).
+Headers: Thông tin bổ sung về phản hồi (ví dụ: loại nội dung, kích thước dữ liệu).
+Body: Nội dung chính của phản hồi (có thể là trang HTML, JSON, hình ảnh, video...).
+
+ResponseEntity để trả về Exception
+
+UUID (Universally Unique Identifier) là một tiêu chuẩn định danh duy nhất, được thiết kế để tạo ra các giá trị duy nhất mà không cần đến một cơ sở dữ liệu hay một hệ thống trung gian nào
+
+DTO (Data Transfer Object) là một mẫu thiết kế được sử dụng để chuyển dữ liệu giữa các lớp hoặc tầng của ứng dụng.
+
+lombok: getter setter
+hibernate:@entity
+
+Optional<User>: This is a container object which may or may not contain a non-null value of type User. It’s used to avoid returning null and instead handle the possibility of an absent value more gracefully.

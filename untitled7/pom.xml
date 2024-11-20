@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Định nghĩa thông tin về dự án -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Nhóm và tên dự án -->
+    <groupId>com.example</groupId>
+    <artifactId>untitled7</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- Thông tin về dự án -->
+    <name>untitled7</name>
+    <description>Example Maven Project</description>
+
+    <!-- Chỉ định JDK cho dự án -->
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>  <!-- Sử dụng Java 8 cho source -->
+        <maven.compiler.target>1.8</maven.compiler.target>  <!-- Sử dụng Java 8 cho target -->
+    </properties>
+
+    <!-- Thêm dependencies (nếu cần) -->
+    <dependencies>
+        <!-- Thêm dependency cho dự án nếu cần, ví dụ JUnit -->
+        <!-- <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency> -->
+    </dependencies>
+
+    <!-- Cấu hình plugin cho Maven, đặc biệt là cho việc biên dịch -->
+    <build>
+        <plugins>
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>   <!-- Source version 1.8 -->
+                    <target>1.8</target>   <!-- Target version 1.8 -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
