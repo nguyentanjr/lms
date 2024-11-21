@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -35,15 +36,14 @@ public class UserBook {
 
     @CreationTimestamp
     @Column(name = "borrow_date")
-    private Date borrowDate;
+    private LocalDate borrowDate;
 
     @UpdateTimestamp
     @Column(name = "return_date")
-    private Date returnDate;
+    private LocalDate returnDate;
 
-    @UpdateTimestamp
     @Column(name = "due_date")
-    private Date dueDate;
+    private LocalDate dueDate;
 
 
 }

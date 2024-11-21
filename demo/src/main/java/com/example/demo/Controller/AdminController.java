@@ -1,5 +1,6 @@
 package com.example.demo.Controller;
 
+import com.example.demo.DTO.ShowBooksBorrowedByUserDTO;
 import com.example.demo.DTO.UpdateUserDTO;
 import com.example.demo.Model.User;
 import com.example.demo.Model.UserBook;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,10 +96,5 @@ public class AdminController {
         model.addAttribute("users", users);
         return "admin_user_list";
     }
-    @GetMapping("/show-books-user-borrowed")
-    @ResponseBody
-    public List<UserBook> showBooksUserBorrowed() {
 
-        return userBookService.getAllBooks();
-    }
 }

@@ -1,13 +1,15 @@
 package com.example.demo.Services.ServiceImpls;
 
+import com.example.demo.DTO.ShowBooksBorrowedByUserDTO;
+import com.example.demo.Model.Book;
 import com.example.demo.Model.UserBook;
 import com.example.demo.Respository.UserBookRepository;
 import com.example.demo.Services.Service.UserBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserBookServiceImpl implements UserBookService {
@@ -43,5 +45,24 @@ public class UserBookServiceImpl implements UserBookService {
     }
     public List<UserBook> getAllBooks() {
         return userBookRepository.findAll();
+    }
+    public List<ShowBooksBorrowedByUserDTO> getBooksWithBasicInfoForAdmin(long userId) {
+        return userBookRepository.getBooksWithBasicInfoForAdmin(userId);
+    }
+    public List<ShowBooksBorrowedByUserDTO> getBooksWithDetailedInfoForUser(long userId) {
+        List<UserBook> userBooks = userBookRepository.findByUserId(userId);
+
+        return userBooks.stream().map(ub -> {
+            Book b = ub.getBook();
+            return new ShowBooksBorrowedByUserDTO(
+                    b.getId(),
+                    b.getTitle(),
+                    ub.getBorrowDate(),
+                    ub.getDueDate(),
+                    b.getPublishedDate(),
+                    b.getCategories(),
+                    b.getAuthors()
+            );
+        }).collect(Collectors.toList());
     }
 }

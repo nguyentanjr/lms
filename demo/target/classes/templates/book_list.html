@@ -28,11 +28,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="/book_list">Find Book</a></li>
-                <li class="nav-item"><a class="nav-link myCart" href="#">View My Cart</a></li>
-                <li class="nav-item"><a class="nav-link" href="/book_list/my_cart">My Borrowed Book</a></li>
+                <li class="nav-item"><a class="nav-link myCart" href="#">My Cart</a></li>
+                <li class="nav-item"><a class="nav-link view-user-book-borrowed" href="#">My Borrowed Book</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">My Reserved Books</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">My Profile</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Notification</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
             </ul>
             <div class="navbar-icons">
@@ -76,7 +76,7 @@
     <!-- Book Data -->
     <table class="table table-striped">
         <thead>
-        <tr>
+        <tr class="text-center">
             <th>ID</th>
             <th>Title</th>
             <th>Author</th>
@@ -88,7 +88,7 @@
         </thead>
 
         <tbody id="bookListTable">
-        <tr th:each="book : ${books}" class="row-list" th:data-row-id="${book.id}"> <!-- fix this -->
+        <tr th:each="book : ${books}" class="row-list text-center" th:data-row-id="${book.id}"> <!-- fix this -->
             <td class="book-id" th:text="${book.id}"></td>
             <td class="book-title" th:text="${book.title}"></td>
             <td class="book-authors">
@@ -121,11 +121,11 @@
                 <div style="display: flex; gap: 3px;">
                     <button class="btn btn-info borrow" id="modalButton" data-toggle="modal"
                             th:if="${book.status == 'Available'}" onclick="outputBorrow()"
-                            sec:authorize="hasRole('USER')">Borrow
-                    </button>
+                            sec:authorize="hasRole('USER')">Borrow</button>
                     <button class="btn btn-warning cart" type="button" th:if="${book.status == 'Available'}"
-                            sec:authorize="hasRole('USER')">Add to cart
-                    </button>
+                            sec:authorize="hasRole('USER')">Add to cart</button>
+                    <button class="btn btn-secondary" type="button" th:if="${book.status != 'Available'}"
+                            sec:authorize="hasRole('USER')">Place a hold</button>
                 </div>
             </td>
         </tr>
@@ -218,7 +218,7 @@
             </div>
             <div class="modal-body">
                 <table class="table table-striped cart-table">
-                    <thead>
+                    <thead class="text-center">
                     <th>ID</th>
                     <th>Title</th>
                     <th>Author</th>
@@ -357,6 +357,43 @@
                 <button class="btn btn-outline-success btn-sm" data-dismiss="modal">
                     Close
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show books user has borrowed -->
+
+<div class="modal fade" id="userHasBorrowed">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header custom-bg-header">
+                <h5 class="modal-title text-custom text-center">My Borrowed Books</h5>
+                <button type="button" class="close-cart" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <table class="table table-striped cart-table">
+                    <thead>
+                    <tr class="book-borrowed-row">
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Published Date</th>
+                        <th>Categories</th>
+                        <th>Authors</th>
+                        <th>Date Borrowed</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody class="list-borrowed"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Confirm</button>
+                <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>

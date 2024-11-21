@@ -1,6 +1,8 @@
 package com.example.demo.Services.Service;
 
+import com.example.demo.DTO.ShowBooksBorrowedByUserDTO;
 import com.example.demo.Model.UserBook;
+import com.example.demo.Respository.UserBookRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,4 +16,7 @@ public interface UserBookService {
     void deleteRelationByBookId(long bookId);
     void deleteRelationByUserId(long userId);
     List<UserBook> getAllBooks();
+
+    List<ShowBooksBorrowedByUserDTO> getBooksWithBasicInfoForAdmin(long userId);
+    List<ShowBooksBorrowedByUserDTO> getBooksWithDetailedInfoForUser(long userId);
 }

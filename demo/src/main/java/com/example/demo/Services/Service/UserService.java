@@ -23,8 +23,10 @@ public interface UserService {
     void removeUser(long userId);
 
     String getUsername();
-    long getUserId(String username);
+    long getUserId();
     boolean validateUserDeletion(long userId);
 
     boolean checkIfUserCurrentlyLogin();
+
+
 }

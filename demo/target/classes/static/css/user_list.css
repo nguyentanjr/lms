@@ -285,24 +285,24 @@ body {
     color: #363434;
 }
 .modal-body {
-    max-height: 400px; /* Giới hạn chiều cao */
-    overflow-y: auto; /* Kích hoạt cuộn dọc */
+    max-height: 400px;
+    overflow-y: auto;
 }
 .modal-dialog {
-    max-width: 800px; /* Đặt chiều rộng tối đa */
-    width: 90%; /* Đặt chiều rộng modal chiếm 90% màn hình */
+    max-width: 800px;
+    width: 90%;
 }
 
 .cart-table {
-    text-align: center; /* Canh trái nội dung bảng */
-    font-size: 14px; /* Điều chỉnh kích thước chữ */
+    text-align: center;
+    font-size: 14px;
 }
 
 .cart-table th,
 .cart-table td {
-    padding: 8px 10px; /* Thêm khoảng cách giữa nội dung */
+    padding: 8px 10px;
 }
 
 .cart-confirm {
-    margin-right: auto; /* Đẩy nút "Confirm" sang bên trái */
+    margin-right: auto;
 }

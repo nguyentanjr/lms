@@ -96,6 +96,11 @@ public class UserController {
         return ResponseEntity.ok("Success");
     }
 
+    @GetMapping("/get_user_id")
+    public ResponseEntity<Long> getUserId() {
+        Long userId = userService.getUserId();
+        return ResponseEntity.ok(userId);
+    }
     @GetMapping("/isUser")
     public ResponseEntity<Boolean> isUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -108,5 +113,9 @@ public class UserController {
         return "profile";
     }
 
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
 
 }

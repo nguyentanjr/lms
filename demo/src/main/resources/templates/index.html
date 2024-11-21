@@ -132,17 +132,17 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="/book_list">Find Book</a></li>
-                <li class="nav-item"><a class="nav-link" href="/book_list?showCart=true">View My Cart</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">My Borrowed Book</a></li>
-                <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
+                <li class="nav-item"><a class="nav-link myCart" href="/book_list?showCart=true">My Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="/book_list/my_cart">My Borrowed Book</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">My Reserved Books</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">My Profile</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Notification</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
             </ul>
             <div class="navbar-icons">
-                <a href="/login" th:if="${#authentication == null}">Login |</a>
-                <a href="/register" th:if="${#authentication == null}">Register</a>
-                <a href="/logout" th:if="${#authentication != null}">Logout</a>
+                <a href="/login" th:if="${#authentication != null}">Login |</a>
+                <a href="/register" th:if="${#authentication != null}">Register</a>
+                <a href="/logout" th:if="${#authentication == null}">Logout</a>
             </div>
         </div>
     </div>

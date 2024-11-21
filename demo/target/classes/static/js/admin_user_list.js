@@ -153,33 +153,32 @@ $(document).on("click", ".update", function (e) {
 })
 
 $(document).on("click",".view-user-book-borrowed",function () {
+    let userId = $(this).closest("tr").find(".user-id").text();
     $("#userHasBorrowed").modal("show");
     $.ajax({
-        url: "/show-books-user-borrowed",
+        url: "/show-books-user-borrowed-for-admin",
         method: "get",
+        data: {userId : userId},
         success: function (response) {
+            $(".list-borrowed").empty();
             console.log(response[1]);
             response.forEach(item => {
-                console.log(item.categories);
+                let currentDate = new Date();
+                let dueDate = new Date(item.dueDate);
+                let status = currentDate > dueDate ? "Past Due Date" : "Within Due Date";
                 let row = `
                 <tr data-item-id = ${item.id}>
                             <td>${item.id}</td>
                             <td>${item.title}</td>
-                            <td>${item.authors}</td>
-                            <td>${item.categories}</td>
-                            <td>${item.categories}</td>
-                            <td>${item.categories}</td>
-                            <td>${item.categories}</td>
-                            <td>${item.categories}</td>
-                            <td>
-                            <button type="button" class="remove-book">
-                            <span>&times;</span>
-                            </button>
-                            </td>
+                            <td>${item.dateBorrowed}</td>
+                            <td>${item.dueDate}</td>
+                            <td>${status}</td>
                         </tr>
                 `
                 $(".list-borrowed").append(row);
             })
         }
+
     })
+
 })

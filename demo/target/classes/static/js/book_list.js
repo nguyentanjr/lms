@@ -117,7 +117,7 @@ $(document).on("click", ".cart", function () {
     $.ajax({
         url: "/add_to_cart",
         method: "get",
-        data: {bookId : bookId},
+        data: {bookId: bookId},
         success: "OK"
     })
 })
@@ -140,11 +140,12 @@ $(document).ready(function () {
                 $(".cart-table tbody").empty();
                 response.forEach(item => {
                     let row = `
-                        <tr data-item-id = ${item.id}>
+                        <tr data-item-id = ${item.id} class="text-center">
                             <td>${item.id}</td>
                             <td>${item.title}</td>
                             <td>${item.authors}</td>
                             <td>${item.categories}</td>
+                            
                             <td>
                             <button type="button" class="cart-remove-book">
                             <span>&times;</span>
@@ -183,7 +184,7 @@ $(document).ready(function () {
             }
         })
     })
-    if(url.get("showCart") === 'true') {
+    if (url.get("showCart") === 'true') {
         $(".myCart").click();
     }
 })
@@ -345,3 +346,44 @@ $(document).ready(function () {
     })
 })
 
+$(document).on("click", ".view-user-book-borrowed", function () {
+    $("#userHasBorrowed").modal("show");
+    $.ajax({
+        url: "/get_user_id",
+        method: "get",
+        success: function (userId) {
+            $.ajax({
+                url: "/show-books-user-borrowed-for-user",
+                method: "get",
+                data: {userId: userId},
+                success: function (response) {
+                    $(".list-borrowed").empty();
+                    console.log(response);
+                    response.forEach(item => {
+                        let currentDate = new Date();
+                        let dueDate = new Date(item.dueDate);
+                        let status = currentDate > dueDate ? "Past Due Date" : "Within Due Date";
+                        let authorsHtml = item.authors.map(author => `<li>${author}</li>`).join("");
+                        let categoriesHtml = item.categories.map(category => `<li>${category}</li>`);
+                        let row = `
+                <tr data-item-id = ${item.id}>
+                            <td>${item.id}</td>
+                            <td>${item.title}</td>
+                            <td>${item.publishedDate}</td>
+                            <td class="list-unstyled">${categoriesHtml}</td>
+                            <td class="list-unstyled">${authorsHtml}</td>
+                            <td>${item.dateBorrowed}</td>
+                            <td>${item.dueDate}</td>
+                            <td>${status}</td>
+                            <td><button class="btn btn-primary">Return</button>
+                            </td>
+                        </tr>
+                `
+                        $(".list-borrowed").append(row);
+                    })
+                }
+            })
+        }
+    })
+
+})

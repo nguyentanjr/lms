@@ -2,11 +2,13 @@ package com.example.demo.Controller;
 
 import com.example.demo.DTO.AddBookDTO;
 import com.example.demo.DTO.BookDTO;
+import com.example.demo.DTO.ShowBooksBorrowedByUserDTO;
 import com.example.demo.Model.Book;
 import com.example.demo.Model.Cart;
 import com.example.demo.Model.Enum.Genre;
 import com.example.demo.Model.User;
 import com.example.demo.Model.UserBook;
+import com.example.demo.Respository.UserBookRepository;
 import com.example.demo.Services.Service.BookService;
 import com.example.demo.Services.Service.UserBookService;
 import com.example.demo.Services.Service.UserService;
@@ -23,7 +25,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,7 +89,13 @@ public class BookController {
         List<UserBook> userBooks = new ArrayList<>();
         for (BookDTO bookDTO : bookDTOList) {
             Book book = modelMapper.map(bookDTO, Book.class);
-            userBooks.add(new UserBook(user, book));
+            UserBook userBook = new UserBook();
+            userBook.setBook(book);
+            userBook.setUser(user);
+            LocalDate borrowDate = LocalDate.now();
+            LocalDate dueDate = borrowDate.plusDays(60);
+            userBook.setDueDate(dueDate);
+            userBooks.add(userBook);
             cart.getBookList().clear();
             session.setAttribute("cart", cart);
         }
@@ -148,5 +159,18 @@ public class BookController {
     public ResponseEntity<String> addABook(@RequestBody AddBookDTO addBookDTO) {
         bookService.addBook(addBookDTO);
         return ResponseEntity.ok("Add book sucessfully!");
+    }
+    @GetMapping("/show-books-user-borrowed-for-admin")
+    @ResponseBody
+    public List<ShowBooksBorrowedByUserDTO> showBooksUserBorrowedForAdmin(long userId, Model model) {
+        model.addAttribute("currentDate", LocalDate.now());
+        return userBookService.getBooksWithBasicInfoForAdmin(userId);
+    }
+    @GetMapping("/show-books-user-borrowed-for-user")
+    @ResponseBody
+    public List<ShowBooksBorrowedByUserDTO> showBooksUserBorrowedForUser(long userId, Model model) {
+        model.addAttribute("currentDate", LocalDate.now());
+        System.out.println(userBookService.getBooksWithDetailedInfoForUser(userId));
+        return userBookService.getBooksWithDetailedInfoForUser(userId);
     }
 }

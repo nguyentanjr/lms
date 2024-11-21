@@ -173,3 +173,32 @@ body {
 .hidden-row {
     display: none;
 }
+.custom-bg-header {
+    background-color: #E9F5DBFF;
+}
+
+.text-custom {
+    color: #363434;
+}
+.modal-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.modal-dialog {
+    max-width: 800px;
+    width: 90%;
+}
+
+.cart-table {
+    text-align: center;
+    font-size: 14px;
+}
+
+.cart-table th,
+.cart-table td {
+    padding: 8px 10px;
+}
+
+.cart-confirm {
+    margin-right: auto;
+}

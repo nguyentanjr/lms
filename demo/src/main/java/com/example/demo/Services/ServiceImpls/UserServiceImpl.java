@@ -47,7 +47,8 @@ public class UserServiceImpl implements UserDetailsService,UserService{
         return ((UserDetails)principal).getUsername();
     }
 
-    public long getUserId(String username) {
+    public long getUserId() {
+        String username = getUsername();
         User user = findUserByUserName(username).get();
         return user.getId();
     }
@@ -93,7 +94,6 @@ public class UserServiceImpl implements UserDetailsService,UserService{
             if(principal instanceof UserDetails) {
                 String username = ((UserDetails) principal).getUsername();
                 User user = findUserByUserName(username).get();
-                System.out.println(user.getId() + " " + userId);
                 if(user.getId() == userId) {
                     return false;
                 }
@@ -104,6 +104,5 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     public boolean checkIfUserCurrentlyLogin() {
         return true;
     }
-
 
 }

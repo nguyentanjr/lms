@@ -173,6 +173,110 @@ body {
 .hidden-row {
     display: none;
 }
+:root {
+    --sidebar-width: 240px;
+    --color-lightest: #E9F5DB;
+    --color-light: #CFE1B9;
+    --color-medium-light: #B5C99A;
+    --color-medium: #97A97C;
+    --color-medium-dark: #87986A;
+    --color-dark: #718355;
+}
+
+body {
+    background-color: var(--color-lightest);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+/* Sidebar Styles */
+.sidebar {
+    width: var(--sidebar-width);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background: white;
+    border-right: 1px solid var(--color-light);
+    padding: 1rem;
+}
+
+.sidebar .nav-link {
+    color: var(--color-dark);
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--color-lightest);
+    color: var(--color-dark);
+}
+
+/* Main Content Styles */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+}
+
+/* Header Styles */
+.dashboard-header {
+    background: white;
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-light);
+    margin-bottom: 2rem;
+}
+
+.btn-primary {
+    background-color: var(--color-dark);
+    border-color: var(--color-dark);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-medium-dark);
+    border-color: var(--color-medium-dark);
+}
+
+/* Stats Cards */
+.stats-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-light);
+}
+
+.text-primary {
+    color: var(--color-dark) !important;
+}
+
+.text-warning {
+    color: var(--color-medium-dark) !important;
+}
+
+.text-info {
+    color: var(--color-medium) !important;
+}
+
+.text-danger {
+    color: var(--color-medium-light) !important;
+}
+
+.text-success {
+    color: var(--color-dark) !important;
+}
+
+/* Task Table */
+.task-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.task-table th {
+    font-weight: 500;
+    color: var(--color-medium-dark);
+    border-bottom: 2px solid var(--color-light);
+}
+
+.task-row {
+    border-bottom: 1px solid var(--color-light);
+}
 .custom-bg-header {
     background-color: #E9F5DBFF;
 }
@@ -201,4 +305,7 @@ body {
 
 .cart-confirm {
     margin-right: auto;
+}
+.book-borrowed-row {
+    white-space: nowrap;
 }
