@@ -54,8 +54,9 @@ $(document).on("click", ".remove-book", function () {
 });
     $(document).on("click", ".remove-confirm", function () {
         let bookId = $("#remove-modal").data("bookId");
+        console.log(bookId);
         let row = $("tr").filter(function () {
-            return $(this).data("row-id") === bookId;
+            return $(this).data("row-id") === bookId    ;
         });
         console.log(row);
         row.fadeOut();

@@ -16,8 +16,11 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Book findById(long bookId);
     @Query("SELECT b FROM Book b WHERE b.title LIKE %:title%")
     public List<Book> findBooksByTitle(String title);
-    @Query("SELECT b FROM Book b WHERE :authorName MEMBER OF b.authors")
-    public List<Book> findBooksByAuthor(String authorName);
+    @Query("SELECT b FROM Book b WHERE :author MEMBER OF b.authors")
+    public List<Book> findBooksByAuthor(String author);
+
+    @Query("SELECT b FROM Book b WHERE :category MEMBER OF b.categories")
+    public List<Book> findBooksByCategory(String category);
 
     @Modifying
     @Transactional

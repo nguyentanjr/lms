@@ -12,11 +12,14 @@ public interface UserBookService {
     void saveAll(List<UserBook> userBookList);
     boolean hasUserBorrowedBook(long userId, long bookId);
     void unassignBookFromUsers(long bookId);
+    UserBook findByBookIdAndUserId(long bookId);
 
     void deleteRelationByBookId(long bookId);
     void deleteRelationByUserId(long userId);
+    void deleteByUserIdAndBookId(long bookId);
     List<UserBook> getAllBooks();
 
     List<ShowBooksBorrowedByUserDTO> getBooksWithBasicInfoForAdmin(long userId);
     List<ShowBooksBorrowedByUserDTO> getBooksWithDetailedInfoForUser(long userId);
+
 }

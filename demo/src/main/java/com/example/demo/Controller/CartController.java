@@ -4,6 +4,7 @@ import com.example.demo.DTO.BookDTO;
 import com.example.demo.Model.Book;
 import com.example.demo.Model.Cart;
 import com.example.demo.Model.User;
+import com.example.demo.Model.UserBook;
 import com.example.demo.Services.Service.BookService;
 import com.example.demo.Services.Service.CartService;
 import com.example.demo.Services.Service.UserBookService;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.beans.Transient;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -34,6 +37,9 @@ public class CartController {
     private UserBookService userBookService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @ModelAttribute("cart")
     public Cart createCart() {
@@ -72,6 +78,27 @@ public class CartController {
 
     }
 
+    @PostMapping("/cart-borrow")
+    public ResponseEntity<String> borrowedFromCart(@RequestBody List<BookDTO> bookDTOList,
+                                                   @ModelAttribute("cart") Cart cart, HttpSession session) {
+        User user = userService.findUserByUserName(userService.getUsername()).get();
+        List<UserBook> userBooks = new ArrayList<>();
+        for (BookDTO bookDTO : bookDTOList) {
+            Book book = modelMapper.map(bookDTO, Book.class);
+            UserBook userBook = new UserBook();
+            userBook.setBook(book);
+            userBook.setUser(user);
+            LocalDate borrowDate = LocalDate.now();
+            LocalDate dueDate = borrowDate.plusDays(60);
+            userBook.setDueDate(dueDate);
+            userBooks.add(userBook);
+            cart.getBookList().clear();
+            bookService.saveBook(book);
+            session.setAttribute("cart", cart);
+        }
+        userBookService.saveAll(userBooks);
+        return ResponseEntity.ok("Success");
+    }
     @GetMapping("/remove-book-in-cart")
     public ResponseEntity<List<BookDTO>> removeBook(long bookId, @ModelAttribute("cart") Cart cart, HttpSession session) {
         cartService.removeBookInCart(bookId,cart);

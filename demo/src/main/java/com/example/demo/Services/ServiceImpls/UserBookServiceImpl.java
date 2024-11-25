@@ -4,7 +4,9 @@ import com.example.demo.DTO.ShowBooksBorrowedByUserDTO;
 import com.example.demo.Model.Book;
 import com.example.demo.Model.UserBook;
 import com.example.demo.Respository.UserBookRepository;
+import com.example.demo.Services.Service.BookService;
 import com.example.demo.Services.Service.UserBookService;
+import com.example.demo.Services.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,9 @@ import java.util.stream.Collectors;
 public class UserBookServiceImpl implements UserBookService {
     @Autowired
     private UserBookRepository userBookRepository;
+    @Autowired
+    private UserService userService;
+
 
     public void save(UserBook userBook) {
         userBookRepository.save(userBook);
@@ -43,26 +48,39 @@ public class UserBookServiceImpl implements UserBookService {
     public void deleteRelationByUserId(long userId) {
         userBookRepository.deleteByUserId(userId);
     }
+
+    public void deleteByUserIdAndBookId(long bookId) {
+        long userId = userService.getUserId();
+        userBookRepository.deleteByUserIdAndBookId(userId,bookId);
+    }
+
     public List<UserBook> getAllBooks() {
         return userBookRepository.findAll();
     }
+
     public List<ShowBooksBorrowedByUserDTO> getBooksWithBasicInfoForAdmin(long userId) {
         return userBookRepository.getBooksWithBasicInfoForAdmin(userId);
     }
+
     public List<ShowBooksBorrowedByUserDTO> getBooksWithDetailedInfoForUser(long userId) {
         List<UserBook> userBooks = userBookRepository.findByUserId(userId);
-
-        return userBooks.stream().map(ub -> {
-            Book b = ub.getBook();
+        return userBooks.stream().map(userBook -> {
+            Book book = userBook.getBook();
             return new ShowBooksBorrowedByUserDTO(
-                    b.getId(),
-                    b.getTitle(),
-                    ub.getBorrowDate(),
-                    ub.getDueDate(),
-                    b.getPublishedDate(),
-                    b.getCategories(),
-                    b.getAuthors()
+                    book.getId(),
+                    book.getTitle(),
+                    book.getPublishedDate(),
+                    userBook.getBorrowDate(),
+                    userBook.getDueDate(),
+                    book.getCategories(),
+                    book.getAuthors(),
+                    userBook.getIsReturned()
             );
         }).collect(Collectors.toList());
+    }
+
+    public UserBook findByBookIdAndUserId(long bookId) {
+        long userId = userService.getUserId();
+        return userBookRepository.findByBookIdAndUserId(bookId, userId);
     }
 }

@@ -30,9 +30,12 @@ public interface BookService {
 
     Book findBookByBookId(long bookId);
 
+
     List<Book> findBooksByTitle(String title);
 
     List<Book> findBookByAuthor(String authorName);
+
+    List<Book> findBookByCategory(String category);
 
     void updateCopiesAvailable(long id, int copies);
 
@@ -63,6 +66,5 @@ public interface BookService {
     boolean checkBookHidden(long bookId);
 
     void editBook(Book book);
-
-
+    void returnBook(long bookId);
 }

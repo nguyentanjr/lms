@@ -27,10 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @SessionAttributes("bookList")
@@ -41,8 +38,6 @@ public class BookController {
     private UserService userService;
     @Autowired
     private UserBookService userBookService;
-    @Autowired
-    private ModelMapper modelMapper;
 
     @GetMapping("/book_list")
     public String getAllBooks(Model model, @ModelAttribute("cart") Cart cart) {
@@ -64,6 +59,7 @@ public class BookController {
 
     @GetMapping("/book_list/set_copies")
     public ResponseEntity<String> setCopies(long bookId, int copies) {
+        Book book = bookService.findBookByBookId(bookId);
         bookService.saveBookBorrowedByUser(bookId,copies);
         return ResponseEntity.ok("Successfully");
     }
@@ -71,37 +67,25 @@ public class BookController {
 
     @GetMapping("/book_list/find")
     public String findBooks(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String authorName, Model model
-    ) {
-        if (title != null) {
-            model.addAttribute("books", bookService.findBooksByTitle(title));
-        } else if (authorName != null) {
-            model.addAttribute("books", bookService.findBookByAuthor(authorName));
+            @RequestParam String searchValue,
+            @RequestParam String filterType, Model model) {
+       if(filterType.equals("title")) {
+           model.addAttribute("books",bookService.findBooksByTitle(searchValue));
+       }
+       else if(filterType.equals("id")) {
+           long bookId = Long.parseLong(searchValue);
+           model.addAttribute("books",bookService.findBookByBookId(bookId));
+       }
+        if(filterType.equals("author")) {
+            model.addAttribute("books",bookService.findBookByAuthor(searchValue));
+        }
+        if(filterType.equals("category")) {
+            model.addAttribute("books",bookService.findBookByCategory(searchValue));
         }
         return "book_list";
     }
 
-    @PostMapping("/cart-borrow")
-    public ResponseEntity<String> borrowedFromCart(@RequestBody List<BookDTO> bookDTOList,
-                                                   @ModelAttribute("cart") Cart cart, HttpSession session) {
-        User user = userService.findUserByUserName(userService.getUsername()).get();
-        List<UserBook> userBooks = new ArrayList<>();
-        for (BookDTO bookDTO : bookDTOList) {
-            Book book = modelMapper.map(bookDTO, Book.class);
-            UserBook userBook = new UserBook();
-            userBook.setBook(book);
-            userBook.setUser(user);
-            LocalDate borrowDate = LocalDate.now();
-            LocalDate dueDate = borrowDate.plusDays(60);
-            userBook.setDueDate(dueDate);
-            userBooks.add(userBook);
-            cart.getBookList().clear();
-            session.setAttribute("cart", cart);
-        }
-        userBookService.saveAll(userBooks);
-        return ResponseEntity.ok("Success");
-    }
+
 
     @GetMapping("/remove-book")
     public ResponseEntity<String> removeBook(long bookId) {
@@ -170,7 +154,14 @@ public class BookController {
     @ResponseBody
     public List<ShowBooksBorrowedByUserDTO> showBooksUserBorrowedForUser(long userId, Model model) {
         model.addAttribute("currentDate", LocalDate.now());
-        System.out.println(userBookService.getBooksWithDetailedInfoForUser(userId));
-        return userBookService.getBooksWithDetailedInfoForUser(userId);
+        List<ShowBooksBorrowedByUserDTO> showBooksBorrowedByUserDTOS = userBookService.getBooksWithDetailedInfoForUser(userId);
+        Collections.reverse(showBooksBorrowedByUserDTOS);
+        return showBooksBorrowedByUserDTOS;
+    }
+
+    @PostMapping("/return-book")
+    public ResponseEntity<String> returnBook(long bookId) {
+        bookService.returnBook(bookId);
+        return ResponseEntity.ok("Book with ID " + bookId + " returned successfully.");
     }
 }

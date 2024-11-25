@@ -45,5 +45,8 @@ public class UserBook {
     @Column(name = "due_date")
     private LocalDate dueDate;
 
+    @Column(name = "return_status")
+    private Boolean isReturned = false;
+
 
 }

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,6 +76,7 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findById(bookId);
     }
 
+
     @Override
     public List<Book> findBooksByTitle(String title) {
         List<Book> books = bookRepository.findBooksByTitle(title);
@@ -87,12 +89,12 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findBookByAuthor(String authorName) {
-        return bookRepository.findBooksByAuthor(authorName);
+    public List<Book> findBookByAuthor(String author) {
+        return bookRepository.findBooksByAuthor(author);
     }
 
-    public List<Book> findBooksByName(String name) {
-        return bookRepository.findBooksByTitle(name);
+    public List<Book> findBookByCategory(String category) {
+        return bookRepository.findBooksByCategory(category);
     }
 
 
@@ -180,9 +182,15 @@ public class BookServiceImpl implements BookService {
 
     public void saveBookBorrowedByUser(long bookId, int copies) {
         User user = userService.findUserByUserName(userService.getUsername()).get();
-        Book book = findBookByBookId(bookId);;
+        Book book = findBookByBookId(bookId);
+        UserBook userBook = new UserBook();
         book.setCopiesAvailable(copies);
-        userBookService.save(new UserBook(user, book));
+        userBook.setBook(book);
+        userBook.setUser(user);
+        LocalDate borrowDate = LocalDate.now();
+        LocalDate dueDate = borrowDate.plusDays(60);
+        userBook.setDueDate(dueDate);
+        userBookService.save(userBook);
     }
 
     public void saveBookFromCart(List<BookDTO> bookDTOList,
@@ -236,4 +244,11 @@ public class BookServiceImpl implements BookService {
         saveBook(myBook);
     }
 
+    public void returnBook(long bookId) {
+        Book book = findBookByBookId(bookId);
+        book.setCopiesAvailable(book.getCopiesAvailable() + 1);
+        saveBook(book);
+        userBookService.deleteByUserIdAndBookId(bookId);
+
+    }
 }

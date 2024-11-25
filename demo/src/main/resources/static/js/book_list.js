@@ -74,7 +74,6 @@ $(document).on("click", ".confirm", function () {
                 <span class="badge badge-danger danger">Checked Out</span> 
 `
                 currentRow.find(".status").html(status);
-                console.log(status);
             }
         }
     })
@@ -358,32 +357,80 @@ $(document).on("click", ".view-user-book-borrowed", function () {
                 data: {userId: userId},
                 success: function (response) {
                     $(".list-borrowed").empty();
-                    console.log(response);
                     response.forEach(item => {
                         let currentDate = new Date();
                         let dueDate = new Date(item.dueDate);
-                        let status = currentDate > dueDate ? "Past Due Date" : "Within Due Date";
+                        let dateStatus = currentDate > dueDate ? "Past Due Date" : "Within Due Date";
+                        let returnStatus = !item.returnStatus ? "Return" : "Returned";
+                        let buttonHtml;
+                        if (returnStatus === "Return") {
+                            buttonHtml = `<button class="btn btn-primary return">${returnStatus}</button>`;
+                        } else {
+                            buttonHtml = `<button class="btn btn-secondary return" disabled>${returnStatus}</button>`;
+                        }
                         let authorsHtml = item.authors.map(author => `<li>${author}</li>`).join("");
                         let categoriesHtml = item.categories.map(category => `<li>${category}</li>`);
                         let row = `
-                <tr data-item-id = ${item.id}>
-                            <td>${item.id}</td>
+                <tr data-book-id = ${item.id} class="return-row">
+                            <td class="item-id">${item.id}</td>
                             <td>${item.title}</td>
                             <td>${item.publishedDate}</td>
                             <td class="list-unstyled">${categoriesHtml}</td>
                             <td class="list-unstyled">${authorsHtml}</td>
                             <td>${item.dateBorrowed}</td>
                             <td>${item.dueDate}</td>
-                            <td>${status}</td>
-                            <td><button class="btn btn-primary">Return</button>
+                            <td>${dateStatus}</td>
+                            <td class="status-button">${buttonHtml}
                             </td>
                         </tr>
                 `
                         $(".list-borrowed").append(row);
+                        $("#return-modal").data("book-id", item.id);
                     })
                 }
             })
         }
     })
-
+    $(document).on("click", ".return", function () {
+        $("#return-modal").modal("show");
+        let row = $(this).closest("tr");
+        let bookId = row.find(".item-id").text();
+        $("#return-modal").data("bookId", bookId);
+    })
+    $(document).on("click", ".return-confirm", function () {
+        $("#return-modal").modal("hide");
+        let bookId = $("#return-modal").data("bookId");
+        bookId = parseInt(bookId);
+        let row = $(".return-row").filter(function () {
+            return $(this).data("book-id") === bookId;
+        })
+        $("#return-modal").modal("hide");
+        row.find(".status-button").html(`<button class="btn btn-secondary return" disabled>Returned</button>`);
+        $.ajax({
+            url: "/return-book",
+            method: "post",
+            data: {bookId: bookId}
+        })
+    })
 })
+$(document).on("click", ".filter-badge", function () {
+    let filterType = $(this).data("filter");
+    let input = $("#searchInput").val();
+    $("#filterType").val(filterType);
+    if(filterType === "id") {
+        $("#searchInput").attr("placeholder","Search by id");
+    }
+    else if(filterType === "title") {
+        $("#searchInput").attr("placeholder","Search by title");
+    }
+    else if(filterType === "author") {
+        $("#searchInput").attr("placeholder","Search by author");
+    }
+    else if(filterType === "category") {
+        $("#searchInput").attr("placeholder","Search by category");
+    }
+    $.ajax({
+        url: ""
+    })
+})
+

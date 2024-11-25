@@ -33,7 +33,7 @@
                 <li class="nav-item"><a class="nav-link" href="#">My Reserved Books</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">My Profile</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Notification</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Borrowed Books History </a></li>
             </ul>
             <div class="navbar-icons">
                 <a href="/login" th:if="${#authentication == null}">Login|</a>
@@ -44,7 +44,7 @@
     </div>
 </nav>
 
-<form action="/book_list/find">
+<form action="/book_list/find" method="GET">
     <div class="container mt-4">
         <div class="search-container">
             <div class="row">
@@ -52,26 +52,27 @@
                     <div class="position-relative">
                         <input type="text"
                                class="form-control form-control-lg search-input"
-                               id="searchInput" name="title"
-                               placeholder="Search by title, author, ISBN, or category...">
-                        <button class="search-button">
+                               id="searchInput" name="searchValue"
+                               placeholder="Search by title">
+                        <button class="search-button" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
+                    </div>
+                    <div class="suggestions-container" id="searchSuggestion"></div>
 
-                    </div>
-                    <div class="suggestions-container" id="searchSuggestion">
-                    </div>
+                    <span class="badge bg-warning filter-badge me-2 mb-2" data-filter="id">ID</span>
                     <span class="badge bg-primary filter-badge me-2 mb-2" data-filter="title">Title</span>
                     <span class="badge bg-success filter-badge me-2 mb-2" data-filter="author">Author</span>
                     <span class="badge bg-info filter-badge me-2 mb-2" data-filter="category">Category</span>
-                    <span class="badge bg-warning filter-badge me-2 mb-2" data-filter="isbn">ID</span>
-                    <span class="badge bg-secondary filter-badge me-2 mb-2" data-filter="year">Year</span>
+
+                    <input type="hidden" id="filterType" name="filterType" value="title">
                 </div>
             </div>
             <button type="submit">Submit</button>
         </div>
     </div>
 </form>
+
 <div class="main-content">
     <!-- Book Data -->
     <table class="table table-striped">
@@ -230,7 +231,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary cart-confirm">Confirm</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
@@ -392,13 +393,34 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Confirm</button>
                 <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
+
+<!-- Show confirm notification for return book   -->
+
+<div class="modal fade" id="return-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header modal-header bg-primary text-white">
+                <h5 class="modal-title">Notification</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-message">
+                Are you sure you want to return this book?
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary return-confirm">Confirm</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
 </script>
 </body>
