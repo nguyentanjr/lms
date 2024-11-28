@@ -16,22 +16,25 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserDetailsService,UserService{
+public class UserServiceImpl implements UserDetailsService, UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private SessionRegistry sessionRegistry;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUserName(username);
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             User myUser = user.get();
             return org.springframework.security.core.userdetails.User.builder()
                     .username(myUser.getUsername())
@@ -44,7 +47,7 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     public String getUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
-        return ((UserDetails)principal).getUsername();
+        return ((UserDetails) principal).getUsername();
     }
 
     public long getUserId() {
@@ -52,6 +55,7 @@ public class UserServiceImpl implements UserDetailsService,UserService{
         User user = findUserByUserName(username).get();
         return user.getId();
     }
+
     public Optional<User> findUserByUserName(String username) {
         return userRepository.findByUserName(username);
     }
@@ -63,6 +67,7 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     public void deleteUserByUserId(long id) {
         userRepository.deleteById(id);
     }
+
     public int countTotalUsers() {
         return userRepository.countTotalUser("USER");
     }
@@ -70,7 +75,7 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     public List<UserDTO> getAllUsers() {
         List<UserDTO> userListDTO = new ArrayList<>();
         List<User> userList = userRepository.findAll();
-        for(User user : userList) {
+        for (User user : userList) {
             UserDTO userDTO = modelMapper.map(user, UserDTO.class);
             userListDTO.add(userDTO);
         }
@@ -86,23 +91,29 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     }
 
 
-
     public boolean validateUserDeletion(long userId) {
         List<Object> principals = sessionRegistry.getAllPrincipals();
-        System.out.println("principal: " + principals.size());
-        for(Object principal : principals) {
-            if(principal instanceof UserDetails) {
+        for (Object principal : principals) {
+            if (principal instanceof UserDetails) {
                 String username = ((UserDetails) principal).getUsername();
                 User user = findUserByUserName(username).get();
-                if(user.getId() == userId) {
+                if (user.getId() == userId) {
                     return false;
                 }
             }
         }
         return true;
     }
-    public boolean checkIfUserCurrentlyLogin() {
-        return true;
+
+    public int[] countUsersOnlineAndNewRegister() {
+        int[] count = new int[3];
+        List<User> users = userRepository.findAll();
+        LocalDate localDate = LocalDate.now();
+        users = users.stream().filter(user -> user.getRegistrationDate().equals(localDate)).collect(Collectors.toList());
+        count[0] = sessionRegistry.getAllPrincipals().size();
+        count[1] = users.size();
+        return count;
     }
+
 
 }

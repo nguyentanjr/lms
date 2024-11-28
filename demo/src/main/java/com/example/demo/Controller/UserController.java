@@ -7,6 +7,8 @@ import com.example.demo.Model.UserBook;
 import com.example.demo.Services.Service.UserBookService;
 import com.example.demo.Services.Service.UserService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +63,7 @@ public class UserController {
         if (authentication != null) {
             return "redirect:/home";
         }
-        return "/login";
+        return "login";
     }
 
     @GetMapping("/home")
@@ -110,12 +112,29 @@ public class UserController {
 
     @GetMapping("/profile")
     public String profile() {
-        return "profile";
+        return "change_information";
     }
 
     @GetMapping("/")
     public String index() {
         return "index";
+    }
+
+    @GetMapping("/getTokenFromCookie")
+    public String getTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                System.out.println(cookie.getValue());
+                System.out.println(111);
+            }
+        }
+         return "book_list";
+    }
+
+    @GetMapping("/count-users-online")
+    public ResponseEntity<int[]> countUsersOnline() {
+        return ResponseEntity.ok(userService.countUsersOnlineAndNewRegister());
     }
 
 }

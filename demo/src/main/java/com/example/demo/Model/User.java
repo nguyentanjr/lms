@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +39,18 @@ public class User {
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
     @CreationTimestamp
     @Column(nullable = false)
-    private Date registrationDate;
+    private LocalDate registrationDate;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<UserBook> userBooks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<BookReservation> bookReservation = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<BorrowedHistory> borrowedHistories = new ArrayList<>();
 
 }

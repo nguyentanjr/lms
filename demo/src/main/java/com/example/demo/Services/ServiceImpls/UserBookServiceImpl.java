@@ -20,7 +20,6 @@ public class UserBookServiceImpl implements UserBookService {
     @Autowired
     private UserService userService;
 
-
     public void save(UserBook userBook) {
         userBookRepository.save(userBook);
     }
@@ -51,7 +50,7 @@ public class UserBookServiceImpl implements UserBookService {
 
     public void deleteByUserIdAndBookId(long bookId) {
         long userId = userService.getUserId();
-        userBookRepository.deleteByUserIdAndBookId(userId,bookId);
+        userBookRepository.deleteByUserIdAndBookId(userId, bookId);
     }
 
     public List<UserBook> getAllBooks() {
@@ -83,4 +82,6 @@ public class UserBookServiceImpl implements UserBookService {
         long userId = userService.getUserId();
         return userBookRepository.findByBookIdAndUserId(bookId, userId);
     }
+
+
 }

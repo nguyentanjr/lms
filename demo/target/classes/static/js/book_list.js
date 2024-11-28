@@ -7,6 +7,20 @@ let currentRow;
 let bookId;
 
 $(document).ready(function () {
+    let url = new URLSearchParams(window.location.search);
+    if (url.get("showCart") === 'true') {
+        $(".myCart").click();
+    } else if (url.get("showBorrowedBook") === 'true') {
+        $(".view-user-book-borrowed").click();
+    }
+    $.ajax({
+        url: "/getTokenFromCookie",
+        method: "get"
+    })
+    $.ajax({
+        url: "/process-reservation",
+        method: "get",
+    })
     $(".row-list").each(function () {
         let row = $(this);
         let bookId = row.find(".book-id").text();
@@ -123,22 +137,20 @@ $(document).on("click", ".cart", function () {
 /*
 show list cart
  */
-$(document).ready(function () {
-    let url = new URLSearchParams(window.location.search);
-    $(document).on("click", ".myCart", function () {
-        $("#cart").modal("show");
-        $.ajax({
-            url: "/cart_list",
-            method: "get",
-            success: function (response) {
-                if (response.length === 0) {
-                    $(".cart-confirm").hide();
-                } else {
-                    $(".cart-confirm").show();
-                }
-                $(".cart-table tbody").empty();
-                response.forEach(item => {
-                    let row = `
+$(document).on("click", ".myCart", function () {
+    $("#cart").modal("show");
+    $.ajax({
+        url: "/cart_list",
+        method: "get",
+        success: function (response) {
+            if (response.length === 0) {
+                $(".cart-confirm").hide();
+            } else {
+                $(".cart-confirm").show();
+            }
+            $(".cart-table tbody").empty();
+            response.forEach(item => {
+                let row = `
                         <tr data-item-id = ${item.id} class="text-center">
                             <td>${item.id}</td>
                             <td>${item.title}</td>
@@ -152,41 +164,38 @@ $(document).ready(function () {
                             </td>
                         </tr>
 `;
-                    $(".cart-table tbody").append(row);
-                });
-                $(document).on("click", ".cart-remove-book", function () {
-                    $(this).closest("tr").remove();
-                    var itemId = $(this).closest("tr").data("item-id");
-                    $.ajax({
-                        url: "/remove-book-in-cart",
-                        method: "get",
-                        data: {bookId: itemId},
-                        success: function (response) {
-                            if (response.length === 0) {
-                                $(".cart-confirm").hide();
-                            }
+                $(".cart-table tbody").append(row);
+            });
+            $(document).on("click", ".cart-remove-book", function () {
+                $(this).closest("tr").remove();
+                var itemId = $(this).closest("tr").data("item-id");
+                $.ajax({
+                    url: "/remove-book-in-cart",
+                    method: "get",
+                    data: {bookId: itemId},
+                    success: function (response) {
+                        if (response.length === 0) {
+                            $(".cart-confirm").hide();
                         }
-                    })
+                    }
                 })
-                $(document).on("click", ".cart-confirm", function () {
-                    $("#cart").modal("hide");
-                    $("#successModalBorrow").modal("show");
-                    $(".cart-table tbody").empty();
-                    $.ajax({
-                        url: "/cart-borrow",
-                        method: "post",
-                        contentType: "application/json; charset=utf-8",
-                        data: JSON.stringify(response)
-                    })
-                    response = {};
+            })
+            $(document).on("click", ".cart-confirm", function () {
+                $("#cart").modal("hide");
+                $("#successModalBorrow").modal("show");
+                $(".cart-table tbody").empty();
+                $.ajax({
+                    url: "/cart-borrow",
+                    method: "post",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(response)
                 })
-            }
-        })
+                response = {};
+            })
+        }
     })
-    if (url.get("showCart") === 'true') {
-        $(".myCart").click();
-    }
 })
+
 
 /*
 ADMIN CONTROLLER
@@ -331,7 +340,9 @@ $(document).ready(function () {
                                 </div>
                             </div>`);
                     }
-                    $("#searchSuggestion").show();
+                    if ($("#filterType").val() === 'title') {
+                        $("#searchSuggestion").show();
+                    }
                 }
             })
         } else {
@@ -379,13 +390,28 @@ $(document).on("click", ".view-user-book-borrowed", function () {
                             <td class="list-unstyled">${authorsHtml}</td>
                             <td>${item.dateBorrowed}</td>
                             <td>${item.dueDate}</td>
-                            <td>${dateStatus}</td>
+                            <td>
+                            <div class="borrowed-status">${dateStatus}</div>
+                            </td>
                             <td class="status-button">${buttonHtml}
                             </td>
                         </tr>
                 `
                         $(".list-borrowed").append(row);
                         $("#return-modal").data("book-id", item.id);
+                        $("tr[data-book-id]").each(function() {
+                            let status = $(this).find("td:eq(7)").text().trim();
+                            console.log(status);
+                            if(status === "Within Due Date") {
+                                $(this).find(".borrowed-status").addClass("badge bg-success filter-badge me-2 mb-2");
+                            }
+                            else {
+                                $(this).find(".borrowed-status").addClass("badge bg-warning filter-badge me-2 mb-2");
+                            }
+                        })
+                        if (response.length === 0) {
+                            $(".return-all").hide();
+                        }
                     })
                 }
             })
@@ -404,33 +430,189 @@ $(document).on("click", ".view-user-book-borrowed", function () {
         let row = $(".return-row").filter(function () {
             return $(this).data("book-id") === bookId;
         })
-        $("#return-modal").modal("hide");
         row.find(".status-button").html(`<button class="btn btn-secondary return" disabled>Returned</button>`);
+        $.ajax({
+            url: "/save-history-borrowed",
+            method: "get",
+            data: {bookId: bookId}
+        })
         $.ajax({
             url: "/return-book",
             method: "post",
             data: {bookId: bookId}
         })
-    })
-})
-$(document).on("click", ".filter-badge", function () {
-    let filterType = $(this).data("filter");
-    let input = $("#searchInput").val();
-    $("#filterType").val(filterType);
-    if(filterType === "id") {
-        $("#searchInput").attr("placeholder","Search by id");
-    }
-    else if(filterType === "title") {
-        $("#searchInput").attr("placeholder","Search by title");
-    }
-    else if(filterType === "author") {
-        $("#searchInput").attr("placeholder","Search by author");
-    }
-    else if(filterType === "category") {
-        $("#searchInput").attr("placeholder","Search by category");
-    }
-    $.ajax({
-        url: ""
+        $(document).on("click", ".cancel", function () {
+            location.reload();
+        })
+
     })
 })
 
+
+$(document).on("click", ".filter-badge", function () {
+    let filterType = $(this).data("filter");
+    $("#filterType").val(filterType);
+    if (filterType === "id") {
+        $("#searchInput").attr("placeholder", "Search by id");
+    } else if (filterType === "title") {
+        $("#searchInput").attr("placeholder", "Search by title");
+    } else if (filterType === "author") {
+        $("#searchInput").attr("placeholder", "Search by author");
+    } else if (filterType === "category") {
+        $("#searchInput").attr("placeholder", "Search by category");
+    }
+})
+
+
+$(document).on("click", ".placeAHold", function () {
+    let bookId = $(this).closest("tr").data("row-id");
+    $.ajax({
+        url: "/book_list/borrowed_check/" + bookId,
+        method: "get",
+        success: function (response) {
+            if (response) {
+                $("#hasBorrowed").modal("show");
+            } else {
+                toastr.options = {
+                    "closeButton": true,
+                    "newestOnTop": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": true,
+                    "timeOut": "5000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+                $.ajax({
+                    url: "/check-user-has-reserve-book",
+                    method: "get",
+                    data: {bookId: bookId},
+                    success: function (response) {
+                        if (response === "Duplicate") {
+                            toastr.error("ID " + bookId + ": You have been reserved this book!")
+                        } else {
+                            toastr.success("Reserve book successfully");
+                            $.ajax({
+                                url: "/reserve-book",
+                                method: "post",
+                                data: {bookId: bookId},
+                                success: function (response) {
+                                }
+                            })
+                        }
+                    }
+                })
+
+            }
+        }
+    })
+
+})
+$(document).on("click", ".view-reserved-book", function () {
+    $.ajax({
+        url: "/process-reservation",
+        method: "get",
+    })
+    $("#reservedBook").modal("show");
+    $(".list-reserved").empty();
+    $.ajax({
+        url: "/get_user_id",
+        method: "get",
+        success: function (userId) {
+            $.ajax({
+                url: "/show-reserve-book",
+                method: "get",
+                data: {userId: userId},
+                success: function (response) {
+                    response.forEach(item => {
+                        let row = `
+                <tr data-reserve-id = ${item.id}>
+                            <td>${item.id}</td>
+                            <td>${item.title}</td>
+                            <td>${item.reservationDate}</td>
+                            <td>
+                            <div class="reserve-status">${item.status}</div>
+                            </td> 
+                            <td>
+                            <button type="button" class="reserve-remove-book">
+                            <span>&times;</span>
+                            </button>
+                            </td>
+                        </tr>
+                `
+                        $(".list-reserved").append(row);
+                    })
+                    $("tr[data-reserve-id]").each(function() {
+                        let status = $(this).find("td:eq(3)").text().trim();
+                        if(status === "Approved") {
+                            $(this).find(".reserve-status").addClass("badge bg-success filter-badge me-2 mb-2");
+                            $(this).find(".reserve-remove-book").hide();
+                        }
+                        else {
+                            $(this).find(".reserve-status").addClass("badge bg-warning filter-badge me-2 mb-2");
+                        }
+                    })
+                }
+            })
+        }
+    })
+})
+$(document).on("click", ".reserve-remove-book", function () {
+    $(this).closest("tr").remove();
+    let bookId = $(this).closest("tr").data("reserve-id");
+    $.ajax({
+        url: "/remove-book-in-reserve-list",
+        method: "get",
+        data: {bookId: bookId},
+    })
+})
+
+$(document).on("click", ".view-borrowed-history", function () {
+    $("#historyBorrowed").modal("show");
+    $(".list-borrow-history").empty();
+    $.ajax({
+        url: "/get_user_id",
+        method: "get",
+        success: function (userId) {
+            $.ajax({
+                url: "/show-borrowed-history",
+                method: "get",
+                data: {userId: userId},
+                success: function (response) {
+                    $(".list-borrow-history").empty();
+                    response.forEach(item => {
+                        let categoriesHtml = item.bookCategories.map(category => `<li>${category}</li>`).join("");
+                        let authorsHtml = item.bookAuthors.map(author => `<li>${author}</li>`).join("");
+                        let row = `
+                <tr data-history-id = ${item.id}>
+                            <td>${item.bookID}</td>
+                            <td>${item.title}</td>
+                            <td>${item.publishedDate}</td>
+                            <td class="list-unstyled">${categoriesHtml}</td>
+                            <td class="list-unstyled">${authorsHtml}</td>
+                            <td>${item.dateBorrowed}</td>
+                            <td>${item.dueDate}</td>
+                            <td>${item.dateReturn}</td>
+                            <td>
+                            <div class="history-status">${item.returnStatus}</div>
+                            </td>
+                        </tr>
+                `
+                        $(".list-borrow-history").append(row);
+                        $("tr[data-history-id]").each(function() {
+                            let status = $(this).find("td:eq(8)").text().trim();
+                            if(status === "On Time") {
+                                $(this).find(".history-status").addClass("badge bg-success filter-badge me-2 mb-2");
+                            }
+                            else {
+                                $(this).find(".history-status").addClass("badge bg-warning filter-badge me-2 mb-2");
+                            }
+                        })
+                        //$("#return-modal").data("book-id", item.id);
+                    })
+                }
+            })
+        }
+    })
+})

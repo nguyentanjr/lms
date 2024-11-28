@@ -29,11 +29,11 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="/book_list">Find Book</a></li>
                 <li class="nav-item"><a class="nav-link myCart" href="#">My Cart</a></li>
-                <li class="nav-item"><a class="nav-link view-user-book-borrowed" href="#">My Borrowed Book</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">My Reserved Books</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">My Profile</a></li>
+                <li class="nav-item"><a class="nav-link view-user-book-borrowed" href="#">Currently Borrowing</a></li>
+                <li class="nav-item"><a class="nav-link view-reserved-book" href="#">My Reserved Books</a></li>
+                <li class="nav-item"><a class="nav-link view-borrowed-history" href="#">My Borrowed Books History</a></li>
+                <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Notification</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Borrowed Books History </a></li>
             </ul>
             <div class="navbar-icons">
                 <a href="/login" th:if="${#authentication == null}">Login|</a>
@@ -125,8 +125,8 @@
                             sec:authorize="hasRole('USER')">Borrow</button>
                     <button class="btn btn-warning cart" type="button" th:if="${book.status == 'Available'}"
                             sec:authorize="hasRole('USER')">Add to cart</button>
-                    <button class="btn btn-secondary" type="button" th:if="${book.status != 'Available'}"
-                            sec:authorize="hasRole('USER')">Place a hold</button>
+                    <button class="btn btn-secondary placeAHold" type="button" th:if="${book.status != 'Available'}"
+                            sec:authorize="hasRole('USER')">Reserve Book</button>
                 </div>
             </td>
         </tr>
@@ -230,7 +230,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary cart-confirm">Confirm</button>
+                <button type="submit" class="btn btn-primary cart-confirm">Borrow All</button>
                 <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
             </div>
         </div>
@@ -416,6 +416,72 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary return-confirm">Confirm</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show reserved book -->
+
+<div class="modal fade" id="reservedBook">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header custom-bg-header">
+                <h5 class="modal-title text-custom text-center">Book Reservation </h5>
+                <button type="button" class="close-cart" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <table class="table table-striped cart-table">
+                    <thead>
+                    <tr class="book-borrowed-row">
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Reservation Date</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody class="list-reserved"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="historyBorrowed">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header custom-bg-header">
+                <h5 class="modal-title text-custom text-center">My Borrowing History</h5>
+                <button type="button" class="close-cart" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <table class="table table-striped cart-table">
+                    <thead>
+                    <tr class="history-borrowed-row">
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Published Date</th>
+                        <th>Categories</th>
+                        <th>Authors</th>
+                        <th>Date Borrowed</th>
+                        <th>Due Date</th>
+                        <th>Date Returned</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody class="list-borrow-history"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
         </div>

@@ -43,4 +43,5 @@ public interface UserBookRepository extends JpaRepository<UserBook,Long> {
     List<ShowBooksBorrowedByUserDTO>getBooksWithBasicInfoForAdmin(long userId);
 
 
+
 }

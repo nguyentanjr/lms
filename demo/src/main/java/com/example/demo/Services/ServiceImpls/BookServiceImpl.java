@@ -51,7 +51,7 @@ public class BookServiceImpl implements BookService {
     private ModelMapper modelMapper;
 
     public void saveBook(Book book) {
-         bookRepository.save(book);
+        bookRepository.save(book);
     }
 
     public List<Book> saveALlBooks(List<Book> books) {
@@ -61,9 +61,10 @@ public class BookServiceImpl implements BookService {
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
+
     public String saveBooksToJson() {
         List<Book> bookList = bookRepository.findAll();
-        Set<String> booksListTitle= bookList.stream().map(Book::getTitle).collect(Collectors.toSet());
+        Set<String> booksListTitle = bookList.stream().map(Book::getTitle).collect(Collectors.toSet());
         try {
             jsonStorageService.saveBooks(booksListTitle);
             return "Books saved successfully!";
@@ -72,6 +73,7 @@ public class BookServiceImpl implements BookService {
             return "Failed to save books.";
         }
     }
+
     public Book findBookByBookId(long bookId) {
         return bookRepository.findById(bookId);
     }
@@ -80,7 +82,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> findBooksByTitle(String title) {
         List<Book> books = bookRepository.findBooksByTitle(title);
-        if(books.isEmpty()) {
+        if (books.isEmpty()) {
             fetchBooks(title);
             books = bookRepository.findBooksByTitle(title);
             saveBooksToJson();
@@ -107,32 +109,32 @@ public class BookServiceImpl implements BookService {
     @Async("thread_api")
     public void fetchBooks(String title) {
         String url = "https://www.googleapis.com/books/v1/volumes?q=" + title + "&key=" + apiKeyConfig.getKey();
-        String response = restTemplate.getForObject(url,String.class);
+        String response = restTemplate.getForObject(url, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
-        try{
+        try {
             JsonNode jsonNode = objectMapper.readTree(response);
             JsonNode items = jsonNode.get("items");
-            for(JsonNode item : items) {
+            for (JsonNode item : items) {
                 saveBook(retrieveBookDataFromAPI(item));
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public Book retrieveBookDataFromAPI(JsonNode item) {
         Book book = new Book();
         String title = item.path("volumeInfo").path("title").asText();
         book.setTitle(title);
         ArrayList<String> authors = new ArrayList<>();
         JsonNode authorsItem = item.path("volumeInfo").path("authors");
-        for(JsonNode author : authorsItem) {
+        for (JsonNode author : authorsItem) {
             authors.add(author.asText());
         }
         book.setAuthors(authors);
         ArrayList<String> categories = new ArrayList<>();
         JsonNode categoriesItem = item.path("volumeInfo").path("categories");
-        for(JsonNode category : categoriesItem) {
+        for (JsonNode category : categoriesItem) {
             categories.add(category.asText());
         }
         book.setCategories(categories);
@@ -194,7 +196,7 @@ public class BookServiceImpl implements BookService {
     }
 
     public void saveBookFromCart(List<BookDTO> bookDTOList,
-                          @ModelAttribute("cart") Cart cart, HttpSession session) {
+                                 @ModelAttribute("cart") Cart cart, HttpSession session) {
         User user = userService.findUserByUserName(userService.getUsername()).get();
         List<UserBook> userBooks = new ArrayList<>();
         for (BookDTO bookDTO : bookDTOList) {
@@ -211,6 +213,7 @@ public class BookServiceImpl implements BookService {
         removeBookById(bookId);
         saveBooksToJson();
     }
+
     public void setHideBook(String status, long bookId) {
         Book book = findBookByBookId(bookId);
         if (status.equals("hide")) {
@@ -247,8 +250,6 @@ public class BookServiceImpl implements BookService {
     public void returnBook(long bookId) {
         Book book = findBookByBookId(bookId);
         book.setCopiesAvailable(book.getCopiesAvailable() + 1);
-        saveBook(book);
         userBookService.deleteByUserIdAndBookId(bookId);
-
     }
 }

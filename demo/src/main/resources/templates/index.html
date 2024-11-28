@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+    <script th:src="@{/static/js/home.js}"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -133,9 +134,9 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="/book_list">Find Book</a></li>
                 <li class="nav-item"><a class="nav-link myCart" href="/book_list?showCart=true">My Cart</a></li>
-                <li class="nav-item"><a class="nav-link" href="/book_list/my_cart">My Borrowed Book</a></li>
+                <li class="nav-item"><a class="nav-link" href="/book_list?showBorrowedBook=true">My Borrowed Book</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">My Reserved Books</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">My Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Notification</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
             </ul>
@@ -150,7 +151,7 @@
 
 <!-- Stats -->
 <div class="stats">
-    <p>We have 2,689,719 registered online learners &nbsp; | &nbsp; 622 new learners so far today</p>
+    <p class="stat"></p>
 </div>
 
 <!-- Hero Section -->
@@ -159,7 +160,7 @@
     <p>Discover a smarter way to manage your library Library Management System (LMS).
         Whether you're a student, educator, or librarian, our system streamlines how you access, borrow the books.
     </p>
-    <button class="btn">GET IN TOUCH</button>
+    <button class="btn gettouch">GET IN TOUCH</button>
 </div>
 
 <!-- Features Section -->

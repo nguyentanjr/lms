@@ -1,9 +1,7 @@
 package com.example.demo.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,7 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-public class BookReservations {
+public class BookReservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private long id;
@@ -21,10 +19,18 @@ public class BookReservations {
     @CreationTimestamp
     private LocalDate reservationDate;
 
-    private LocalDate borrowedDate;
-
-    private LocalDate returnDate;
-
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    @JsonIgnore
+    private Book book;
+
+
 
 }

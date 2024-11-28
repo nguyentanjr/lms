@@ -78,13 +78,20 @@ public class AdminController {
     }
     @GetMapping("/admin/book_list/find")
     public String findBooks(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String authorName, Model model
-    ) {
-        if (title != null) {
-            model.addAttribute("books", bookService.findBooksByTitle(title));
-        } else if (authorName != null) {
-            model.addAttribute("books", bookService.findBookByAuthor(authorName));
+            @RequestParam String searchValue,
+            @RequestParam String filterType, Model model) {
+        if(filterType.equals("title")) {
+            model.addAttribute("books",bookService.findBooksByTitle(searchValue));
+        }
+        else if(filterType.equals("id")) {
+            long bookId = Long.parseLong(searchValue);
+            model.addAttribute("books",bookService.findBookByBookId(bookId));
+        }
+        if(filterType.equals("author")) {
+            model.addAttribute("books",bookService.findBookByAuthor(searchValue));
+        }
+        if(filterType.equals("category")) {
+            model.addAttribute("books",bookService.findBookByCategory(searchValue));
         }
         return "admin_book_list";
     }

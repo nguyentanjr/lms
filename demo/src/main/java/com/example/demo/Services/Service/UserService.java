@@ -9,11 +9,13 @@ import java.util.Optional;
 
 public interface UserService {
     UserDetails loadUserByUsername(String username);
+
     Optional<User> findUserByUserName(String username);
 
     User findUserById(long id);
 
     void deleteUserByUserId(long id);
+
     int countTotalUsers();
 
     List<UserDTO> getAllUsers();
@@ -23,10 +25,11 @@ public interface UserService {
     void removeUser(long userId);
 
     String getUsername();
+
     long getUserId();
+
     boolean validateUserDeletion(long userId);
 
-    boolean checkIfUserCurrentlyLogin();
-
+    int[] countUsersOnlineAndNewRegister();
 
 }

@@ -208,3 +208,23 @@ $(document).on("click",".add-book",function () {
     })
 })
 
+$(document).on("click", ".filter-badge", function () {
+    let filterType = $(this).data("filter");
+    let input = $("#searchInput").val();
+    $("#filterType").val(filterType);
+    if(filterType === "id") {
+        $("#searchInput").attr("placeholder","Search by id");
+    }
+    else if(filterType === "title") {
+        $("#searchInput").attr("placeholder","Search by title");
+    }
+    else if(filterType === "author") {
+        $("#searchInput").attr("placeholder","Search by author");
+    }
+    else if(filterType === "category") {
+        $("#searchInput").attr("placeholder","Search by category");
+    }
+    $.ajax({
+        url: ""
+    })
+})

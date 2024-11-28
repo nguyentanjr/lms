@@ -3,12 +3,10 @@ package com.example.demo.Controller;
 import com.example.demo.DTO.AddBookDTO;
 import com.example.demo.DTO.BookDTO;
 import com.example.demo.DTO.ShowBooksBorrowedByUserDTO;
-import com.example.demo.Model.Book;
-import com.example.demo.Model.Cart;
+import com.example.demo.Model.*;
 import com.example.demo.Model.Enum.Genre;
-import com.example.demo.Model.User;
-import com.example.demo.Model.UserBook;
 import com.example.demo.Respository.UserBookRepository;
+import com.example.demo.Services.Service.BookReservationService;
 import com.example.demo.Services.Service.BookService;
 import com.example.demo.Services.Service.UserBookService;
 import com.example.demo.Services.Service.UserService;
@@ -38,6 +36,8 @@ public class BookController {
     private UserService userService;
     @Autowired
     private UserBookService userBookService;
+    @Autowired
+    private BookReservationService bookReservationService;
 
     @GetMapping("/book_list")
     public String getAllBooks(Model model, @ModelAttribute("cart") Cart cart) {
@@ -164,4 +164,6 @@ public class BookController {
         bookService.returnBook(bookId);
         return ResponseEntity.ok("Book with ID " + bookId + " returned successfully.");
     }
+
+
 }
