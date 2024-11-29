@@ -21,5 +21,5 @@ public interface UserBookService {
 
     List<ShowBooksBorrowedByUserDTO> getBooksWithBasicInfoForAdmin(long userId);
     List<ShowBooksBorrowedByUserDTO> getBooksWithDetailedInfoForUser(long userId);
-
+    List<Long> getUserIdByBookId(long bookId);
 }

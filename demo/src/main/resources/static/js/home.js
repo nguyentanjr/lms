@@ -1,32 +1,50 @@
 $(document).ready(function () {
-    $.ajax({
-        url: "/count-users-online",
-        method: "get",
-        success: function (response)                 {
-            let stat = "We have " +  response[0] + " registered online | " + response[1] + " new registers today";
-            $(".stat").text(stat);
-        },
-    })
+    setUnreadNotification();
 
 })
 
-var socket = new SockJS('/ws'); // Kết nối đến endpoint WebSocket
-var stompClient = Stomp.over(socket);
+function countUnreadNotification() {
+    $.ajax({
+        url: "/process-reservation",
+        method: "get",
+    })
+    $.ajax({
+        url: "/count-unread-notification",
+        method: "get",
+        success: function(response) {
+            $('#unreadNotificationCount').text(response);
+        }
+    })
+}
+
+
+let socket = new SockJS('/ws');
+let stompClient = Stomp.over(socket);
 
 stompClient.connect({}, function (frame) {
-    console.log('Connected: ' + frame);
+    console.log('Connected to WebSocket: ' + frame);
 
-    // Subscribe vào topic để nhận thông báo
-    stompClient.subscribe('/topic/notifications', function (messageOutput) {
-        var message = JSON.parse(messageOutput.body);
-        displayNotification(message);
+    stompClient.subscribe('/topic/notifications', function (notification) {
+        const notif = JSON.parse(notification.body);
+        showNotification(notif.message);
     });
+
+    stompClient.subscribe('/user/queue/private', function (notification) {
+        const message = JSON.parse(notification.body).message;
+        console.log(message);
+        setUnreadNotification();
+    });
+}, function (error) {
+    console.error('WebSocket connection error: ', error);
 });
 
-// Hàm hiển thị thông báo lên trang web
-function displayNotification(message) {
-    var notificationsDiv = document.getElementById("notifications");
-    var notificationDiv = document.createElement("div");
-    notificationDiv.textContent = message.content;
-    notificationsDiv.appendChild(notificationDiv);
+
+function setUnreadNotification() {
+    $.ajax({
+        url: "/count-unread-notification",
+        method: "get",
+        success: function(response) {
+            $('#unreadNotificationCount').text(response);
+        }
+    })
 }

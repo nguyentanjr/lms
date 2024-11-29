@@ -125,8 +125,6 @@ public class UserController {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                System.out.println(cookie.getValue());
-                System.out.println(111);
             }
         }
          return "book_list";

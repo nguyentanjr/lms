@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class    AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     @Autowired
     private SessionRegistry sessionRegistry;
     @Override
@@ -22,9 +22,9 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
                 grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")
         );
         if (isAdmin)
-            setDefaultTargetUrl("/dashboard");
+            setDefaultTargetUrl("http://localhost:8080/dashboard");
         else
-            setDefaultTargetUrl("/home");
+            setDefaultTargetUrl("http://localhost:8080/home");
             super.onAuthenticationSuccess(request, response, authentication);
     }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -16,7 +17,7 @@ public class UserDTO {
     private String email;
     private String phoneNumber;
     private Gender gender;
-    private Date registrationDate;
+    private LocalDate registrationDate;
     private String role;
 
     

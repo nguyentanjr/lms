@@ -49,6 +49,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         Object principal = authentication.getPrincipal();
         return ((UserDetails) principal).getUsername();
     }
+    public String findUserNameByUserId(long userId) {
+        return userRepository.getUserNameByUserId(userId);
+    }
 
     public long getUserId() {
         String username = getUsername();

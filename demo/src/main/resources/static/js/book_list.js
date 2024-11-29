@@ -13,6 +13,12 @@ $(document).ready(function () {
     } else if (url.get("showBorrowedBook") === 'true') {
         $(".view-user-book-borrowed").click();
     }
+    else if (url.get("showReservation") === 'true') {
+        $(".view-reserved-book").click();
+    }
+    else if(url.get("showBorrowedHistory") === 'true') {
+        $(".view-borrowed-history").click();
+    }
     $.ajax({
         url: "/getTokenFromCookie",
         method: "get"
@@ -71,28 +77,34 @@ $(document).on("click", ".confirm", function () {
         url: "/book_list/get_copies/" + bookId,
         method: "get",
         success: function (response) {
-            let availableCopies = response - 1;
-            $.ajax({
-                url: "/book_list/set_copies",
-                method: "get",
-                data: {
-                    copies: availableCopies,
-                    bookId: bookId
-                },
-            })
-            if (availableCopies === 0) {
-                currentRow.find(".success").hide();
-                currentRow.find(".borrow").hide();
-                currentRow.find(".cart").hide();
-                let status = `
+            if (response <= 0) {
+                $("#confirm-modal").modal("hide");
+                alert("Book copies = 0!");
+            } else {
+                let availableCopies = response - 1;
+                $.ajax({
+                    url: "/book_list/set_copies",
+                    method: "get",
+                    data: {
+                        copies: availableCopies,
+                        bookId: bookId
+                    },
+                })
+                if (availableCopies === 0) {
+                    currentRow.find(".success").hide();
+                    currentRow.find(".borrow").hide();
+                    currentRow.find(".cart").hide();
+                    let status = `
                 <span class="badge badge-danger danger">Checked Out</span> 
 `
-                currentRow.find(".status").html(status);
+                    currentRow.find(".status").html(status);
+                }
+                $("#confirm-modal").modal("hide");
+                $("#successModalBorrow").modal("show");
             }
         }
     })
-    $("#confirm-modal").modal("hide");
-    $("#successModalBorrow").modal("show");
+
 })
 /*
 Add to cart
@@ -362,6 +374,7 @@ $(document).on("click", ".view-user-book-borrowed", function () {
         url: "/get_user_id",
         method: "get",
         success: function (userId) {
+            console.log(111);
             $.ajax({
                 url: "/show-books-user-borrowed-for-user",
                 method: "get",
@@ -417,7 +430,7 @@ $(document).on("click", ".view-user-book-borrowed", function () {
             })
         }
     })
-    $(document).on("click", ".return", function () {
+            $(document).on("click", ".return", function () {
         $("#return-modal").modal("show");
         let row = $(this).closest("tr");
         let bookId = row.find(".item-id").text();
@@ -436,11 +449,25 @@ $(document).on("click", ".view-user-book-borrowed", function () {
             method: "get",
             data: {bookId: bookId}
         })
-        $.ajax({
-            url: "/return-book",
-            method: "post",
-            data: {bookId: bookId}
-        })
+            .then(function() {
+                return $.ajax({
+                    url: "/return-book",
+                    method: "post",
+                    data: {bookId: bookId},
+                    success: function() {
+                        console.log("return success");
+                    }
+                });
+            })
+            .then(function() {
+                return $.ajax({
+                    url: "/process-reservation",
+                    method: "get",
+                    success: function() {
+                        console.log("Process reservation completed");
+                    }
+                });
+            })
         $(document).on("click", ".cancel", function () {
             location.reload();
         })
@@ -492,7 +519,7 @@ $(document).on("click", ".placeAHold", function () {
                         if (response === "Duplicate") {
                             toastr.error("ID " + bookId + ": You have been reserved this book!")
                         } else {
-                            toastr.success("Reserve book successfully");
+                            toastr.success("ID " + bookId + ": Reserve book successfully");
                             $.ajax({
                                 url: "/reserve-book",
                                 method: "post",
@@ -616,3 +643,54 @@ $(document).on("click", ".view-borrowed-history", function () {
         }
     })
 })
+
+$(document).ready(function () {
+    setUnreadNotification();
+
+})
+
+function countUnreadNotification() {
+    $.ajax({
+        url: "/process-reservation",
+        method: "get",
+    })
+    $.ajax({
+        url: "/count-unread-notification",
+        method: "get",
+        success: function(response) {
+            $('#unreadNotificationCount').text(response);
+        }
+    })
+}
+
+
+let socket = new SockJS('/ws');
+let stompClient = Stomp.over(socket);
+
+stompClient.connect({}, function (frame) {
+    console.log('Connected to WebSocket: ' + frame);
+
+    stompClient.subscribe('/topic/notifications', function (notification) {
+        const notif = JSON.parse(notification.body);
+        showNotification(notif.message);
+    });
+
+    stompClient.subscribe('/user/queue/private', function (notification) {
+        const message = JSON.parse(notification.body).message;
+        console.log(message);
+        setUnreadNotification();
+    });
+}, function (error) {
+    console.error('WebSocket connection error: ', error);
+});
+
+
+function setUnreadNotification() {
+    $.ajax({
+        url: "/count-unread-notification",
+        method: "get",
+        success: function(response) {
+            $('#unreadNotificationCount').text(response);
+        }
+    })
+}

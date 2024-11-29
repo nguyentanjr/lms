@@ -17,17 +17,5 @@ public class WebSocketEventListener {
     @Autowired
     private UserService userService;
 
-    @EventListener
-    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        log.info("Received a new web socket connection");
-    }
 
-    @EventListener
-    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        long userId = userService.getUserId();
-        headerAccessor.getSessionAttributes().put("userId", userId);
-        String sessionId = headerAccessor.getSessionId( );
-        log.info("User Disconnected : " + sessionId);
-    }
 }

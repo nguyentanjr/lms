@@ -9,4 +9,5 @@ public interface BorrowedHistoryService {
     void addHistoryBorrowedBooks(long bookId);
     List<BorrowedHistory> showBorrowedHistory();
     void save(BorrowedHistory borrowedHistory);
+    void deleteRelationByBookId(long bookId);
 }

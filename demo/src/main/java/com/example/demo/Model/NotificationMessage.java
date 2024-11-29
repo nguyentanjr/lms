@@ -6,7 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,13 +21,15 @@ import java.util.UUID;
 @Entity
 public class NotificationMessage {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private long id;
-    private String userId;
-    private String content;
-    private String type;
-    private LocalDateTime timestamp;
-    private String recipientId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String message;
+
+    private String username;
+
+    @CreationTimestamp
+    private Date timestamp;
 
 
 }

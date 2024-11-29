@@ -53,7 +53,7 @@ public interface BookService {
 
     boolean checkUserHasBorrowedBook(long bookId);
 
-    void saveBookBorrowedByUser(long bookId, int copies);
+    void saveBookBorrowedByUser(long bookId, long userId,int copies);
 
     void saveBookFromCart(@RequestBody List<BookDTO> bookDTOList,
                           @ModelAttribute("cart") Cart cart, HttpSession session);

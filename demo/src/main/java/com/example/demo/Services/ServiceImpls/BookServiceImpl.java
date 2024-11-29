@@ -2,15 +2,9 @@ package com.example.demo.Services.ServiceImpls;
 
 import com.example.demo.DTO.AddBookDTO;
 import com.example.demo.DTO.BookDTO;
-import com.example.demo.Model.Book;
-import com.example.demo.Model.Cart;
-import com.example.demo.Model.User;
-import com.example.demo.Model.UserBook;
+import com.example.demo.Model.*;
 import com.example.demo.Respository.BookRepository;
-import com.example.demo.Services.Service.BookService;
-import com.example.demo.Services.Service.JsonStorageService;
-import com.example.demo.Services.Service.UserBookService;
-import com.example.demo.Services.Service.UserService;
+import com.example.demo.Services.Service.*;
 import com.example.demo.config.APIKeyConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +43,10 @@ public class BookServiceImpl implements BookService {
     private UserBookService userBookService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private BorrowedHistoryService borrowedHistoryService;
 
     public void saveBook(Book book) {
         bookRepository.save(book);
@@ -182,8 +180,8 @@ public class BookServiceImpl implements BookService {
         return userBookService.hasUserBorrowedBook(user.getId(), bookId);
     }
 
-    public void saveBookBorrowedByUser(long bookId, int copies) {
-        User user = userService.findUserByUserName(userService.getUsername()).get();
+    public void saveBookBorrowedByUser(long bookId, long userId,int copies) {
+        User user = userService.findUserById(userId);
         Book book = findBookByBookId(bookId);
         UserBook userBook = new UserBook();
         book.setCopiesAvailable(copies);
@@ -209,7 +207,15 @@ public class BookServiceImpl implements BookService {
     }
 
     public void removeBook(long bookId) {
+        List<Long> listsUserId = userBookService.getUserIdByBookId(bookId);
+        for(Long userId : listsUserId) {
+            String username = userService.findUserNameByUserId(userId);
+            String message = "ID " + bookId  + ": Due to unforeseen circumstances, we need to remove this from our " +
+                    "library. Sorry for the inconvenient!   ";
+            notificationService.sendNotificationToUser(username,message);
+        }
         userBookService.deleteRelationByBookId(bookId);
+        borrowedHistoryService.deleteRelationByBookId(bookId);
         removeBookById(bookId);
         saveBooksToJson();
     }

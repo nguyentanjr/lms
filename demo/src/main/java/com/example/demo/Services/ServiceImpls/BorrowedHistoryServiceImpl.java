@@ -4,6 +4,7 @@ import com.example.demo.Model.Book;
 import com.example.demo.Model.BorrowedHistory;
 import com.example.demo.Model.User;
 import com.example.demo.Model.UserBook;
+import com.example.demo.Respository.BookRepository;
 import com.example.demo.Respository.BorrowedHistoryRepository;
 import com.example.demo.Respository.UserBookRepository;
 import com.example.demo.Services.Service.BookService;
@@ -20,7 +21,7 @@ public class BorrowedHistoryServiceImpl implements BorrowedHistoryService {
     @Autowired
     private UserService userService;
     @Autowired
-    private BookService bookService;
+    private BookRepository bookRepository;
     @Autowired
     private UserBookRepository userBookRepository;
     @Autowired
@@ -28,7 +29,7 @@ public class BorrowedHistoryServiceImpl implements BorrowedHistoryService {
     public void addHistoryBorrowedBooks(long bookId) {
         long userId = userService.getUserId();
         User user = userService.findUserById(userId);
-        Book book = bookService.findBookByBookId(bookId);
+        Book book = bookRepository.findById(bookId);
         UserBook userBook = userBookRepository.findByBookIdAndUserId(bookId,userId);
         LocalDate returnDate = LocalDate.now();
         BorrowedHistory borrowedHistory = new BorrowedHistory();
@@ -53,5 +54,8 @@ public class BorrowedHistoryServiceImpl implements BorrowedHistoryService {
          borrowedHistoryRepository.save(borrowedHistory);
     }
 
+    public void deleteRelationByBookId(long bookId) {
+        borrowedHistoryRepository.deleteByBookId(bookId);
+    }
 
 }

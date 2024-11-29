@@ -12,6 +12,8 @@ public interface UserService {
 
     Optional<User> findUserByUserName(String username);
 
+    String findUserNameByUserId(long userId);
+
     User findUserById(long id);
 
     void deleteUserByUserId(long id);

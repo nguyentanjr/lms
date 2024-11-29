@@ -60,7 +60,8 @@ public class BookController {
     @GetMapping("/book_list/set_copies")
     public ResponseEntity<String> setCopies(long bookId, int copies) {
         Book book = bookService.findBookByBookId(bookId);
-        bookService.saveBookBorrowedByUser(bookId,copies);
+        long userId = userService.getUserId();
+        bookService.saveBookBorrowedByUser(bookId,userId,copies );
         return ResponseEntity.ok("Successfully");
     }
 
@@ -89,9 +90,8 @@ public class BookController {
 
     @GetMapping("/remove-book")
     public ResponseEntity<String> removeBook(long bookId) {
-        userBookService.deleteRelationByBookId(bookId);
-        bookService.removeBookById(bookId);
-        bookService.saveBooksToJson();
+        bookReservationService.deleteRelationByBookId(bookId);
+        bookService.removeBook(bookId);
         return ResponseEntity.ok("Book removed successfully");
     }
 
@@ -159,11 +159,11 @@ public class BookController {
         return showBooksBorrowedByUserDTOS;
     }
 
-    @PostMapping("/return-book")
-    public ResponseEntity<String> returnBook(long bookId) {
-        bookService.returnBook(bookId);
-        return ResponseEntity.ok("Book with ID " + bookId + " returned successfully.");
-    }
+        @PostMapping("/return-book")
+        public ResponseEntity<String> returnBook(long bookId) {
+            bookService.returnBook(bookId);
+            return ResponseEntity.ok("Book with ID " + bookId + " returned successfully.");
+        }
 
 
 }

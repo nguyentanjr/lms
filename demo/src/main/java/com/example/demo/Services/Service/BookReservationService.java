@@ -14,4 +14,6 @@ public interface BookReservationService {
 
     void deleteBookInReserveList(long bookId);
     void processReservation();
+    List<BookReservation> getAll();
+    void deleteRelationByBookId(long bookId);
 }

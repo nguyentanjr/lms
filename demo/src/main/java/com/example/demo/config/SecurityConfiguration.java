@@ -33,10 +33,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authority -> authority
-                        .requestMatchers("/","/register/**","/login/**","/webjars/**").permitAll()
+                        .requestMatchers("/","/register/**","/login/**","/webjars/**","/api/notifications/**").permitAll()
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**","/static/**","/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

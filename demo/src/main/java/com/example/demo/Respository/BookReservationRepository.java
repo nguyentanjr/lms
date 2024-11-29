@@ -27,4 +27,9 @@ public interface BookReservationRepository extends JpaRepository<BookReservation
 
     @Query("SELECT br FROM BookReservation br")
     List<BookReservation> findAll();
+
+    @Modifying
+    @Transactional
+    void deleteByBookId(long bookId);
+
 }

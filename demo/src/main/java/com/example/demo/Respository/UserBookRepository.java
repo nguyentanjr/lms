@@ -42,6 +42,8 @@ public interface UserBookRepository extends JpaRepository<UserBook,Long> {
             "FROM UserBook ub JOIN ub.book b WHERE ub.user.id =:userId")
     List<ShowBooksBorrowedByUserDTO>getBooksWithBasicInfoForAdmin(long userId);
 
+    @Query("SELECT ub.user.id FROM UserBook ub WHERE ub.book.id = :bookId")
+    List<Long> listsUserId(long bookId);
 
 
 }

@@ -13,9 +13,11 @@
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
-    <script th:src="@{/static/js/book_list.js}"></script>
+    <script th:src="@{/static/js/admin_dashboard.js}"></script>
     <style>
         :root {
             --sidebar-width: 240px;
@@ -144,7 +146,7 @@
     <!-- Header -->
     <div class="dashboard-header d-flex justify-content-between align-items-center">
         <h4 class="mb-0">Welcome Admin!</h4>
-        <button class="btn btn-primary">Push Information</button>
+        <button class="btn btn-primary push-information">Push Information</button>
     </div>
 
     <!-- Stats Row -->
@@ -177,6 +179,30 @@
             <div class="stats-card">
                 <h3 class="mb-0 text-success">21</h3>
                 <small class="text-muted">Complete</small>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade notification-modal" id="inputModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Input Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="inputForm" action="/api/notifications/send">
+                    <div class="form-group">
+                        <label for="userName"></label>
+                        <input type="text" class="form-control" id="userName">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary submit">Submit</button>
             </div>
         </div>
     </div>

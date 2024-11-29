@@ -83,5 +83,7 @@ public class UserBookServiceImpl implements UserBookService {
         return userBookRepository.findByBookIdAndUserId(bookId, userId);
     }
 
-
+    public List<Long> getUserIdByBookId(long bookId) {
+        return userBookRepository.listsUserId(bookId);
+    }
 }
