@@ -63,7 +63,7 @@ $(document).on("click", ".remove-book", function () {
         $("#remove-modal").modal("hide");
         $("#successModalRemoving").modal("show");
         $.ajax({
-            url: "/remove-book",
+            url: "/admin/remove-book",
             method: "get",
             data: {bookId: bookId}
         })
@@ -112,7 +112,7 @@ $(document).on("click", ".edit-book", function () {
             row.find(".book-publishedDate").text(publishedDate);
         }
         $.ajax({
-            url: "/edit-book",
+            url: "/admin/edit-book",
             method: "post",
             contentType: "application/json",
             data: JSON.stringify({
@@ -200,7 +200,7 @@ $(document).on("click",".add-book",function () {
         }
 
         $.ajax({
-            url: "/add-book",
+            url: "/admin/add-book",
             method: "post",
             contentType: "application/json",
             data: JSON.stringify(data)
@@ -224,7 +224,5 @@ $(document).on("click", ".filter-badge", function () {
     else if(filterType === "category") {
         $("#searchInput").attr("placeholder","Search by category");
     }
-    $.ajax({
-        url: ""
-    })
+
 })

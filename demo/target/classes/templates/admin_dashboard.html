@@ -17,6 +17,9 @@
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link to Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script th:src="@{/static/js/admin_dashboard.js}"></script>
     <style>
         :root {
@@ -133,13 +136,13 @@
         <h4>LMS</h4>
     </div>
     <div class="nav flex-column">
-        <a href="#" class="nav-link active">Dashboard</a>
+        <a href="/admin/dashboard" class="nav-link active">Dashboard</a>
         <a href="/admin/book_list" class="nav-link">Book List</a>
         <a href="/admin/user_list" class="nav-link">User List</a>
-        <a href="#" class="nav-link">Inbox</a>
-        <a href="#" class="nav-link">Reports</a>
+
     </div>
 </div>
+
 
 <!-- Main Content -->
 <div class="main-content">
@@ -149,63 +152,118 @@
         <button class="btn btn-primary push-information">Push Information</button>
     </div>
 
-    <!-- Stats Row -->
-    <div class="row">
-        <div class="col-md-2">
-            <div class="stats-card">
-                <h3 class="mb-0 text-primary">8</h3>
-                <small class="text-muted">Total User</small>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Library Management Statistics</h1>
+
+        <!-- Chart Container -->
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Books Status</h3>
+                <canvas id="booksStatusChart"></canvas>
             </div>
-        </div>
-        <div class="col-md-2">
-            <div class="stats-card">
-                <h3 class="mb-0 text-warning">7</h3>
-                <small class="text-muted">Online</small>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="stats-card">
-                <h3 class="mb-0 text-info">13</h3>
-                <small class="text-muted">Testing</small>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="stats-card">
-                <h3 class="mb-0 text-danger">11</h3>
-                <small class="text-muted">Pending</small>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="stats-card">
-                <h3 class="mb-0 text-success">21</h3>
-                <small class="text-muted">Complete</small>
+            <div class="col-md-6">
+                <h3>Books Borrowed and Returned</h3>
+                <canvas id="borrowedReturnedChart"></canvas>
             </div>
         </div>
     </div>
-</div>
-<div class="modal fade notification-modal" id="inputModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Input Information</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="inputForm" action="/api/notifications/send">
-                    <div class="form-group">
-                        <label for="userName"></label>
-                        <input type="text" class="form-control" id="userName">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary submit">Submit</button>
+    <div class="modal fade notification-modal" id="inputModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Input Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="inputForm" action="/admin/push-information" method="post">
+                        <div class="form-group">
+                            <label for="content"></label>
+                            <input type="text" class="form-control" id="content" name="content">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
-</div>
+    <script>
+        const booksStatusData = {
+            labels: ['Total Books', 'Books Borrowed', 'Books Available'],
+            datasets: [{
+                label: 'Books Statistics',
+                data: [1500, 400, 1100], // Example data: Total Books, Borrowed, Available
+                backgroundColor: ['#FF6F61', '#4CAF50', '#2196F3'],
+                borderColor: ['#FF6F61', '#4CAF50', '#2196F3'],
+                borderWidth: 1
+            }]
+        };
+
+        const booksStatusConfig = {
+            type: 'pie',
+            data: booksStatusData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                }
+            }
+        };
+
+        // Data for Borrowed vs Returned Books
+        const borrowedReturnedData = {
+            labels: ['Borrowed', 'Returned'],
+            datasets: [{
+                label: 'Books Borrowed and Returned',
+                data: [200, 150], // Example data: Borrowed Books, Returned Books
+                backgroundColor: ['#FF9800', '#4CAF50'],
+                borderColor: ['#FF9800', '#4CAF50'],
+                borderWidth: 1
+            }]
+        };
+
+        const borrowedReturnedConfig = {
+            type: 'bar',
+            data: borrowedReturnedData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        // Render the Charts
+        window.onload = function () {
+            const ctxBooksStatus = document.getElementById('booksStatusChart').getContext('2d');
+            const booksStatusChart = new Chart(ctxBooksStatus, booksStatusConfig);
+
+            const ctxBorrowedReturned = document.getElementById('borrowedReturnedChart').getContext('2d');
+            const borrowedReturnedChart = new Chart(ctxBorrowedReturned, borrowedReturnedConfig);
+        };
+    </script>
+
+
 </body>
 </html>

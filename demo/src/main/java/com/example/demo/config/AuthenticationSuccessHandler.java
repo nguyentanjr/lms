@@ -22,7 +22,7 @@ public class    AuthenticationSuccessHandler extends SavedRequestAwareAuthentica
                 grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")
         );
         if (isAdmin)
-            setDefaultTargetUrl("http://localhost:8080/dashboard");
+            setDefaultTargetUrl("http://localhost:8080/admin/dashboard");
         else
             setDefaultTargetUrl("http://localhost:8080/home");
             super.onAuthenticationSuccess(request, response, authentication);

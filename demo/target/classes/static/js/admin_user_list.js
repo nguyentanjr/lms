@@ -15,7 +15,7 @@ $(document).on("click", ".remove-confirm", function () {
     }
     $("#remove-modal").modal("hide");
     $.ajax({
-        url: "/remove-user",
+        url: "/admin/remove-user",
         method: "get",
         data: {userId: userId},
         success: function (response) {
@@ -143,7 +143,7 @@ $(document).on("click", ".update", function (e) {
         role: row.find(".role").val(),
     };
     $.ajax({
-        url: "/update-user",
+        url: "/admin/update-user",
         method: "post",
         data: JSON.stringify(data),
         contentType: "application/json"
@@ -156,7 +156,7 @@ $(document).on("click",".view-user-book-borrowed",function () {
     let userId = $(this).closest("tr").find(".user-id").text();
     $("#userHasBorrowed").modal("show");
     $.ajax({
-        url: "/show-books-user-borrowed-for-admin",
+        url: "/admin/show-books-user-borrowed-for-admin",
         method: "get",
         data: {userId : userId},
         success: function (response) {

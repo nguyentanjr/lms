@@ -81,7 +81,7 @@ body {
 }
 
 .navbar-icons a:hover {
-    color: #CFE1B9; /* Màu nhấn */
+        color: #CFE1B9; /* Màu nhấn */
 }
 .notification-item {
     position: relative; /* Đặt relative để badge có thể được đặt tuyệt đối */
@@ -101,4 +101,9 @@ body {
     justify-content: center;
     align-items: center;
     font-weight: bold;
+}
+.notification-unread {
+    background-color: #f0f8ff; /* Màu nền cho thông báo chưa đọc */
+    border-left: 4px solid #007bff; /* Dòng viền bên trái để nhấn mạnh */
+    color: #000; /* Màu chữ cho thông báo chưa đọc */
 }

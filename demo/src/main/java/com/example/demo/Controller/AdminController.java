@@ -5,6 +5,7 @@ import com.example.demo.DTO.UpdateUserDTO;
 import com.example.demo.Model.User;
 import com.example.demo.Model.UserBook;
 import com.example.demo.Services.Service.BookService;
+import com.example.demo.Services.Service.NotificationService;
 import com.example.demo.Services.Service.UserBookService;
 import com.example.demo.Services.Service.UserService;
 import org.modelmapper.ModelMapper;
@@ -36,7 +37,9 @@ public class AdminController {
     private BookService bookService;
     @Autowired
     private UserBookService userBookService;
-    @GetMapping("/dashboard")
+    @Autowired
+    private NotificationService notificationService;
+    @GetMapping("/admin/dashboard")
     public String adminDashboard(Model model) {
         int totalUsers = userService.countTotalUsers();
         model.addAttribute("totalUsers", totalUsers);
@@ -48,7 +51,7 @@ public class AdminController {
         return "admin_user_list";
     }
 
-    @GetMapping("/remove-user")
+    @GetMapping("/admin/remove-user")
     public ResponseEntity<Boolean> removeUser(long userId) {
         if(userService.validateUserDeletion(userId)) {
             userBookService.deleteRelationByUserId(userId);
@@ -59,7 +62,7 @@ public class AdminController {
             return  ResponseEntity.ok(false);
         }
     }
-    @PostMapping("/update-user")
+    @PostMapping("/admin/update-user")
     public ResponseEntity<String> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
         User user = userService.findUserByUserName(updateUserDTO.getUsername()).get();
         System.out.println(updateUserDTO.getId());
@@ -102,6 +105,12 @@ public class AdminController {
         users.add(user);
         model.addAttribute("users", users);
         return "admin_user_list";
+    }
+    @PostMapping("/admin/push-information")
+    public String pushInformation(@RequestParam String content) {
+        System.out.println(content);
+        notificationService.sendNotificationToAllUser(content);
+        return "admin_dashboard";
     }
 
 }

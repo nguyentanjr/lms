@@ -88,7 +88,7 @@ public class BookController {
 
 
 
-    @GetMapping("/remove-book")
+    @GetMapping("/admin/remove-book")
     public ResponseEntity<String> removeBook(long bookId) {
         bookReservationService.deleteRelationByBookId(bookId);
         bookService.removeBook(bookId);
@@ -113,7 +113,7 @@ public class BookController {
         return ResponseEntity.ok(book.isHidden());
     }
 
-    @PostMapping("/edit-book")
+    @PostMapping("/admin/edit-book")
     @ResponseBody
     public ResponseEntity<String> editBook(@RequestBody Book book) {
         Book myBook = bookService.findBookByBookId(book.getId());
@@ -138,13 +138,13 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBookSuggestion(query));
     }
 
-    @PostMapping("/add-book")
+    @PostMapping("/admin/add-book")
     @ResponseBody
     public ResponseEntity<String> addABook(@RequestBody AddBookDTO addBookDTO) {
         bookService.addBook(addBookDTO);
         return ResponseEntity.ok("Add book sucessfully!");
     }
-    @GetMapping("/show-books-user-borrowed-for-admin")
+    @GetMapping("/admin/show-books-user-borrowed-for-admin")
     @ResponseBody
     public List<ShowBooksBorrowedByUserDTO> showBooksUserBorrowedForAdmin(long userId, Model model) {
         model.addAttribute("currentDate", LocalDate.now());

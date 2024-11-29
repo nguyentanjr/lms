@@ -26,7 +26,7 @@ stompClient.connect({}, function (frame) {
 
     stompClient.subscribe('/topic/notifications', function (notification) {
         const notif = JSON.parse(notification.body);
-        showNotification(notif.message);
+        setUnreadNotification();
     });
 
     stompClient.subscribe('/user/queue/private', function (notification) {

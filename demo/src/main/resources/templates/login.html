@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -160,17 +160,20 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="/book_list">Find Book</a></li>
-                <li class="nav-item"><a class="nav-link myCart" href="#">My Cart</a></li>
-                <li class="nav-item"><a class="nav-link view-user-book-borrowed" href="#">My Borrowed Book</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">My Reserved Books</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">My Profile</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Notification</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Borrowed Books History </a></li>
+                <li class="nav-item"><a class="nav-link myCart" href="/book_list?showCart=true">My Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="/book_list?showBorrowedBook=true">Currently Borrowing</a></li>
+                <li class="nav-item"><a class="nav-link" href="/book_list?showReservation=true">My Reserved Books</a></li>
+                <li class="nav-item"><a class="nav-link view-borrowed-history"
+                                        href="/book_list?showBorrowedHistory=true">My Borrowed Books History</a></li>
+                <li class="nav-item notification-item"><a class="nav-link" href="/notification">
+                    <i class="fas fa-bell" sec:authorize="isAuthenticated()"></i> Notification</a>
+                    <span class="notification-badge"  id="unreadNotificationCount" sec:authorize="isAuthenticated()">0</span>
+                </li>
             </ul>
             <div class="navbar-icons">
-                <a href="/login" th:if="${#authentication == null}">Login|</a>
-                <a href="/register" th:if="${#authentication == null}">Register</a>
-                <a href="/logout" th:if="${#authentication != null}">Logout</a>
+                <a href="/login" sec:authorize="!isAuthenticated()">Login |</a>
+                <a href="/register" sec:authorize="!isAuthenticated()">Register</a>
+                <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
             </div>
         </div>
     </div>

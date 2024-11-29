@@ -1,7 +1,6 @@
 package com.example.demo.Services.ServiceImpls;
 
 import com.example.demo.Model.Notification;
-import com.example.demo.Model.NotificationMessage;
 import com.example.demo.Respository.NotificationRepository;
 import com.example.demo.Services.Service.NotificationService;
 import com.example.demo.Services.Service.UserService;
@@ -9,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -22,6 +19,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private UserService userService;
 
+    public void sendNotificationToAllUser(String message) {
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notificationRepository.save(notification);
+        messagingTemplate.convertAndSend("/topic/notifications",notification);
+    }
     public void sendNotificationToUser(String username, String message) {
         Notification notification = new Notification(username, message);
         notificationRepository.save(notification);
@@ -32,10 +35,15 @@ public class NotificationServiceImpl implements NotificationService {
         );
     }
 
-    public List<Notification> getAllNotificationByUserName() {
+        public List<Notification> getAllNotificationPrivate() {
         long userId = userService.getUserId();
         String username = userService.findUserNameByUserId(userId);
         return notificationRepository.getAllNotification(username);
+    }
+
+    public List<Notification> getAllNotificationPublic() {
+        String username = null;
+        return notificationRepository.findByUsernameIsNull();
     }
 
     public List<Notification> getAllNotification() {

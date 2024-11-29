@@ -1,26 +1,5 @@
-$(document).on("click",".push-information",function () {
-    $(".notification-modal").modal("show");
-})
 
-$(document).on("click",".submit",function () {
-    const name = $('#userName').val();
-    const email = $('#userEmail').val();
 
-    const formData = {
-        message: name,
-        email: email
-    };
-    $.ajax({
-        url: '/api/notifications/send',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(formData),
-        success: function (response) {
-            console.log('Success:', response);
-            $('#inputModal').modal('hide');
-        },
-    });
-})
 
 let stompClient;
 
@@ -51,3 +30,9 @@ $(document).ready(function() {
     connect();
 
 })
+
+$(document).on("click", ".push-information", function () {
+    $(".notification-modal").modal("show");
+    console.log(34);
+});
+

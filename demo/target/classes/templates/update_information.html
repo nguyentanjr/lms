@@ -98,6 +98,25 @@
         .navbar-icons a:hover {
             color: #CFE1B9; /* Màu nhấn */
         }
+        .notification-item {
+            position: relative; /* Đặt relative để badge có thể được đặt tuyệt đối */
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: 7px;
+            background-color: red;
+            color: white;
+            font-size: 12px;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -111,15 +130,21 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="/book_list">Find Book</a></li>
-                <li class="nav-item"><a class="nav-link" href="/book_list">View My Cart</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">My Borrowed Book</a></li>
+                <li class="nav-item"><a class="nav-link myCart" href="/book_list?showCart=true">My Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="/book_list?showBorrowedBook=true">Currently Borrowing</a></li>
+                <li class="nav-item"><a class="nav-link" href="/book_list?showReservation=true">My Reserved Books</a></li>
+                <li class="nav-item"><a class="nav-link view-borrowed-history"
+                                        href="/book_list?showBorrowedHistory=true">My Borrowed Books History</a></li>
+                <li class="nav-item notification-item"><a class="nav-link" href="/notification">
+                    <i class="fas fa-bell" sec:authorize="isAuthenticated()"></i> Notification</a>
+                    <span class="notification-badge"  id="unreadNotificationCount" sec:authorize="isAuthenticated()">0</span>
+                </li>
                 <li class="nav-item"><a class="nav-link" href="/profile">My Profile</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Notification</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
             </ul>
             <div class="navbar-icons">
-                <a href="/logout">Logout</a>
+                <a href="/login" sec:authorize="!isAuthenticated()">Login |</a>
+                <a href="/register" sec:authorize="!isAuthenticated()">Register</a>
+                <a href="/logout" sec:authorize="isAuthenticated()">Logout</a>
             </div>
         </div>
     </div>

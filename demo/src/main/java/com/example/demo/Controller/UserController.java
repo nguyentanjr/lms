@@ -49,7 +49,7 @@ public class UserController {
     public String register(@ModelAttribute User user, Model model) {
         Optional<User> myUser = userService.findUserByUserName(user.getUsername());
         if (myUser.isPresent()) {
-            model.addAttribute("existingUser", "the username has existed");
+            model.addAttribute("existingUser", "The username has already been taken.");
             return "register";
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -57,6 +57,7 @@ public class UserController {
         userService.saveUser(user);
         return "redirect:/login";
     }
+
 
     @GetMapping("/login")
     public String login(Authentication authentication) {
