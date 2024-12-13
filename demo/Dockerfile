@@ -3,7 +3,9 @@ FROM maven:3.8.4-openjdk-17 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-
+ENV DATASOURCE_URL="mysql://root:EEIWDUEfrLCNenUZxswKfOAMWYOislEd@junction.proxy.rlwy.net:21036/railway"
+ENV DATASOURCE_USER="root"
+ENV DATASOURCE_PASSWORD="EEIWDUEfrLCNenUZxswKfOAMWYOislEd"
 RUN mkdir -p /root/.m2 && \
     echo '<mirrors>' > /root/.m2/settings.xml && \
     echo '<mirror>' >> /root/.m2/settings.xml && \
