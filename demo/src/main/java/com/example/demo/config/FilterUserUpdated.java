@@ -30,6 +30,10 @@ public class FilterUserUpdated extends OncePerRequestFilter {
         }
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         User user = userService.findUserByUserName(username).get();
+        if (request.getRequestURI().equals("/error")) {
+            response.sendRedirect("/");
+            return;
+        }
         if (user.getEmail() == null && !request.getRequestURI().equals("/update_information")) {
             response.sendRedirect("/update_information");
             return;

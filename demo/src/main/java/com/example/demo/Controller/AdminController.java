@@ -1,27 +1,19 @@
 package com.example.demo.Controller;
 
-import com.example.demo.DTO.ShowBooksBorrowedByUserDTO;
 import com.example.demo.DTO.UpdateUserDTO;
 import com.example.demo.Model.User;
-import com.example.demo.Model.UserBook;
 import com.example.demo.Services.Service.BookService;
 import com.example.demo.Services.Service.NotificationService;
 import com.example.demo.Services.Service.UserBookService;
 import com.example.demo.Services.Service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

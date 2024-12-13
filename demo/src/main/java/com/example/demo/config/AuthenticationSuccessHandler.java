@@ -12,12 +12,13 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class    AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     @Autowired
     private SessionRegistry sessionRegistry;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        sessionRegistry.registerNewSession(request.getSession().getId(),authentication.getPrincipal());
+        sessionRegistry.registerNewSession(request.getSession().getId(), authentication.getPrincipal());
         boolean isAdmin = authentication.getAuthorities().stream().anyMatch(
                 grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")
         );
@@ -25,6 +26,6 @@ public class    AuthenticationSuccessHandler extends SavedRequestAwareAuthentica
             setDefaultTargetUrl("http://localhost:8080/admin/dashboard");
         else
             setDefaultTargetUrl("http://localhost:8080/home");
-            super.onAuthenticationSuccess(request, response, authentication);
+        super.onAuthenticationSuccess(request, response, authentication);
     }
 }

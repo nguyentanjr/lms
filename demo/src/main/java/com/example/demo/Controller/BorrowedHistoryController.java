@@ -1,6 +1,5 @@
 package com.example.demo.Controller;
 
-import com.example.demo.Model.Book;
 import com.example.demo.Model.BorrowedHistory;
 import com.example.demo.Services.Service.BorrowedHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;

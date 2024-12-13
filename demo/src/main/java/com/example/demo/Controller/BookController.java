@@ -1,29 +1,18 @@
 package com.example.demo.Controller;
 
 import com.example.demo.DTO.AddBookDTO;
-import com.example.demo.DTO.BookDTO;
 import com.example.demo.DTO.ShowBooksBorrowedByUserDTO;
 import com.example.demo.Model.*;
-import com.example.demo.Model.Enum.Genre;
-import com.example.demo.Respository.UserBookRepository;
 import com.example.demo.Services.Service.BookReservationService;
 import com.example.demo.Services.Service.BookService;
 import com.example.demo.Services.Service.UserBookService;
 import com.example.demo.Services.Service.UserService;
-import com.example.demo.Services.ServiceImpls.UserBookServiceImpl;
-import com.example.demo.Services.ServiceImpls.UserServiceImpl;
-import jakarta.servlet.http.HttpSession;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 

@@ -1,9 +1,7 @@
 package com.example.demo.Controller;
 
 import com.example.demo.DTO.UpdateInformationDTO;
-import com.example.demo.Model.Book;
 import com.example.demo.Model.User;
-import com.example.demo.Model.UserBook;
 import com.example.demo.Services.Service.UserBookService;
 import com.example.demo.Services.Service.UserService;
 
@@ -21,8 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 

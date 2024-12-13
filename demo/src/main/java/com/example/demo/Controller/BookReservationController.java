@@ -1,16 +1,11 @@
 package com.example.demo.Controller;
 
-import com.example.demo.DTO.BookDTO;
 import com.example.demo.DTO.BookReservationDTO;
-import com.example.demo.Model.BookReservation;
-import com.example.demo.Model.Cart;
 import com.example.demo.Services.Service.BookReservationService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Collections;

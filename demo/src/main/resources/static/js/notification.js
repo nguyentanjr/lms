@@ -9,7 +9,7 @@ function connect() {
         $(document).on("click", ".private", function () {
          //   $('.notification-list').empty();
             showNotificationPrivate();
-            stompClient.subscribe('/topic/notifications', function (notification) {
+            stompClient.subscribe('/user/queue/private', function (notification) {
                 const message = JSON.parse(notification.body).message;
                 console.log(message);
                 showNotificationPrivate();
@@ -19,7 +19,7 @@ function connect() {
         $(document).on("click", ".public", function () {
            // $('.notification-list').empty();
             showNotificationPublic();
-            stompClient.subscribe('/user/queue/private', function (notification) {
+            stompClient.subscribe('/topic/notifications', function (notification) {
                 const message = 'Private: ' + JSON.parse(notification.body).message;
                 //  console.log(message);
                 showNotificationPublic();
@@ -110,7 +110,7 @@ $(document).ready(function () {
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <b class="mb-1">Private Announcement</b>
+                                    <b class="mb-1">Private Notification</b>
                                     <p class="mb-1">${message}</p>
                                     <small class="timestamp">
                                         <i class="far fa-clock mr-1"></i>${timestamp}
