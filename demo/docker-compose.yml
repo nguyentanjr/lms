@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:5.7
+    container_name: db-1
+    environment:
+      MYSQL_ROOT_PASSWORD: 123tanteo
+      MYSQL_DATABASE: root
+    ports:
+      - "3307:3306"
+
+  demo-application:
+    build: .
+    container_name: demo-application-1
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/railway"
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123tanteo

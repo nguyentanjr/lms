@@ -3,11 +3,12 @@ package com.example.demo.Services.Service;
 import com.example.demo.DTO.UserDTO;
 import com.example.demo.Model.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
     UserDetails loadUserByUsername(String username);
 
     Optional<User> findUserByUserName(String username);
