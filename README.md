@@ -9,7 +9,6 @@ Library Management System - Do quá trình deploy hệ thống gặp một chút
 
 ## 🌟 Giới Thiệu
 
-Thêm thông tin chi tiết về dự án:
 Hệ Thống Quản Lý Thư Viện (LMS) là một phần mềm trực tuyến giúp thư viện và người quản lý dễ dàng quản lý kho tài nguyên của mình, bao gồm sách, tạp chí, báo, và các tài liệu nghiên cứu khác. LMS giúp tối ưu hóa việc mượn, trả, và theo dõi tài liệu, đồng thời cung cấp các tính năng hỗ trợ quản lý và phục vụ nhu cầu người dùng một cách hiệu quả.
 
 - **Công nghệ sử dụng**: 
