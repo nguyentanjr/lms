@@ -2,7 +2,7 @@
 
 
 
-Library Management System - Do quá trình deploy hệ thống gặp một chút vấn đề nên em quyết định quay video về trang web của mình, em đã có sever project và sever database nhưng do kinh phí có hạn nên lúc truy vấn database sẽ gây delay hệ thống và gây ra trải nghiệm rất tệ cho người dùng. Đây là trang web em đã deploy: https://tan-3p0m.onrender.com/
+Library Management System - Project được viết 95% bởi em, không sao chép ở bất cứ đâu. Do quá trình deploy hệ thống gặp một chút vấn đề nên em quyết định quay video về trang web của mình, em đã có sever project và sever database nhưng do kinh phí có hạn nên lúc truy vấn database sẽ gây delay hệ thống và gây ra trải nghiệm rất tệ cho người dùng. Đây là trang web em đã deploy: https://tan-3p0m.onrender.com/
 
 
 ---
